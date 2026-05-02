@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+/* :root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+body {
+  font-family: poppins, sans-serif;
+}
+
+.go3118922589 {
+  top: 80px !important;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+
+.container {
+  width: 100%;
+  @media (width >=96rem
+
+    /* 1536px */
+  ) {
+    max-width: 85rem
+      /* 1536px */
+    ;
+  }
+}
+
+
+.prose ul {
+  list-style-type: disc;
+  padding-left: 15px;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 15px;
+}
+
+.prose blockquote {
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 40px;
+  margin-inline-end: 40px;
+  unicode-bidi: isolate;
+}
+.prose p{
+  margin-bottom: 10px;
+}
+.prose h1 {
+  margin-bottom: 10px;
+  font-size: xx-large;
+}
+.prose h2 {
+  margin-bottom: 10px;
+  font-size:x-large;
+}
+.prose h3 {
+  margin-bottom: 10px;
+  font-size:larger;
+}
+.prose h4 {
+  margin-bottom: 10px;
+  font-size:large;
+}
+.prose h5 {
+  margin-bottom: 10px;
+  font-size:medium;
+}
+.prose h6 {
+  margin-bottom: 10px;
+  font-size:small;
+}
+
+.itemCard .splide__pagination__page.is-active{
+  transform: scale(1.2) !important;
+}
+
+.itemCard .splide__pagination__page{
+  width: 5px !important;
+  height: 5px !important;
+  margin: 1.5px !important;
+}

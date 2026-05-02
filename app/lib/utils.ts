@@ -1,0 +1,1 @@
+export const hideHeaderFooter = ['/reset-password','/order-success'];
