@@ -3,9 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { fetchCartItems } from "@/app/cart/cartApi";
+import { useAppSelector } from "../redux/hooks";
 
-export function useCartItems(userArg : any) {
-  const reduxUser = useSelector((state) => state.authSlice?.user);
+export function useCartItems(userArg?: any) {
+  const reduxUser = useAppSelector((state) => state.authSlice?.user);
   const user = userArg ?? reduxUser;
 
   return useQuery({

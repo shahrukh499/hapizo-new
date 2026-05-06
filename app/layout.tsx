@@ -5,6 +5,8 @@ import { League_Spartan } from "next/font/google";
 import ReactQueryProvider from "./ReactQueryProvider";
 import Header from "./components/header/Header";
 import { Providers } from "./redux/Provider";
+import SnackbarProviderWrapper from "./components/snackbar/SnackbarProviderWrapper"
+import UserDetailsModal from "./components/profile/UserDetailsModal";
 
 const leagueSpartan = League_Spartan({
   weight: ["200","300","400","500","600","700"],
@@ -33,8 +35,11 @@ export default function RootLayout({
       <body className={`${leagueSpartan.className} h-full antialiased`}>
         <ReactQueryProvider>
           <Providers>
-          <Header/>
-          <main>{children}</main>
+            <SnackbarProviderWrapper>
+              <Header/>
+              <main>{children}</main>
+              <UserDetailsModal/>
+            </SnackbarProviderWrapper>
           </Providers>
         </ReactQueryProvider>
       </body>

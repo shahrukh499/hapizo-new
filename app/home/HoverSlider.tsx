@@ -4,7 +4,13 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import Image from 'next/image';
 import Link from 'next/link';
 
-function HoverSlider({ thumbnails, slug, eagerLoad = false } : any) {
+interface hoverPropsType{
+  thumbnails: [] | null;
+  slug: string;
+  eagerLoad: boolean
+}
+
+function HoverSlider({ thumbnails, slug, eagerLoad = false } : hoverPropsType) {
     const splideRef = useRef<any>(null);
   
     const play = () => {
@@ -29,7 +35,7 @@ function HoverSlider({ thumbnails, slug, eagerLoad = false } : any) {
             interval: 2000,
           }}
         >
-          {thumbnails?.map((img:any, i:number) => (
+          {thumbnails?.map((img:string, i:number) => (
             <SplideSlide key={i}>
               <Link href={`products/${slug}`}>
                 <Image

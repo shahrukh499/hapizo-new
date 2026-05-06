@@ -28,8 +28,13 @@ export default function Home() {
       }
 
       // ✅ Sort newest first by createdAt
+      type Product = {
+        createdAt: string; // or Date if already parsed
+      };
+      
       const sortedProducts = data.products.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        (a: Product, b: Product) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
 
       return sortedProducts;
@@ -133,7 +138,7 @@ export default function Home() {
                   return (
                     <div key={i} className="w-[50%] md:w-[33%] lg:w-[20%] px-0.5">
                       <div >
-                        <Skeleton variant="rectangle" width={'100%'} height={250} />
+                        <Skeleton variant="rectangular" width={'100%'} height={250} />
                         <Skeleton variant="text" width={50} />
                         <Skeleton variant="text" width={'100%'} />
                         <Skeleton variant="text" width={100} />

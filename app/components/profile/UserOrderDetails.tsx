@@ -1,0 +1,178 @@
+import { API_CONFIG, getApiUrl } from '@/app/utils/apiConfig';
+import { Button, Skeleton } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import Image from 'next/image';
+import React from 'react'
+import Review from './Revew';
+
+export default function UserOrderDetails() {
+
+    const handleUserOrders = async () => {
+        const apiUri = getApiUrl(API_CONFIG.ENDPOINTS.ORDERLIST);
+        const requestOptions = API_CONFIG.createRequestOptions(
+            API_CONFIG.HTTP_METHODS.GET
+        );
+
+        const response = await fetch(apiUri, requestOptions);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to fetch products");
+        }
+
+        return data;
+    };
+
+    const { data: orders, isLoading, error } = useQuery({
+        queryKey: ["orders"],
+        queryFn: handleUserOrders,
+        staleTime: 1000 * 30,
+        refetchOnWindowFocus: false,
+    });
+
+    //console.log(orders,'order');
+    
+
+
+
+    return (
+        <div>
+            <div className="mb-5">
+                <h1 className="text-[25px] font-semibold">All Orders</h1>
+            </div>
+            <div>
+                {
+                    isLoading ? (
+                        <Skeleton sx={{ mb: 2, borderRadius: 3 }} variant="rectangular" animation="wave" width={`100%`} height={200} />
+                    ) : (
+                        orders?.orders?.length > 0 ? (
+                            orders?.orders?.map((ord: any, i: number) => {
+                                return (
+                                    <div key={i} className='bg-gray-200 my-3 rounded p-3'>
+                                        <div>
+                                            {
+                                                ord.status === "confirmed" ? (
+                                                    <div className='flex items-center gap-x-2'>
+                                                        <Image src="/assets/img/confirmed.png" alt='' width={45} height={45} />
+                                                        <div>
+                                                            <p className='capitalize font-semibold text-[18px] text-[#05d134] leading-tight'>confirmed</p>
+                                                            <p className='text-[14px]'>
+                                                                Arrived By{" "}
+                                                                {new Date(
+                                                                    new Date(ord.createdAt).setDate(
+                                                                        new Date(ord.createdAt).getDate() + 5
+                                                                    )
+                                                                ).toLocaleDateString("en-IN", {
+                                                                    day: "numeric",
+                                                                    month: "short",
+                                                                })}
+                                                                {" - "}
+                                                                {new Date(
+                                                                    new Date(ord.createdAt).setDate(
+                                                                        new Date(ord.createdAt).getDate() + 9
+                                                                    )
+                                                                ).toLocaleDateString("en-IN", {
+                                                                    day: "numeric",
+                                                                    month: "short",
+                                                                })}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ) : ord.status === "pending" ? (
+                                                    <div>
+                                                        <p>Pending</p>
+                                                    </div>
+                                                ) : ord.status === "cancelled" ? (
+                                                    <div className='flex items-center gap-x-2'>
+                                                        <Image src="/assets/img/cancel.png" alt='' width={45} height={45} />
+                                                        <div>
+                                                            <p className='capitalize font-semibold text-[18px] text-[#f64437] leading-tight'>cancelled</p>
+                                                            <p>
+                                                                On{" "}
+                                                                {new Date(
+                                                                    new Date(ord.createdAt).setDate(
+                                                                        new Date(ord.createdAt).getDate()
+                                                                    )
+                                                                ).toLocaleDateString("en-IN", {
+                                                                    day: "numeric",
+                                                                    month: "short",
+                                                                    year: "numeric",
+                                                                })}
+                                                                {" "} as per your request
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ) : ord.status === "delivered" ? (
+                                                    <div className='flex items-center gap-x-2'>
+                                                        <Image src="/assets/img/booking.png" alt='' width={45} height={45} />
+                                                        <div>
+                                                            <p className='capitalize font-semibold text-[18px] text-[#05d134] leading-tight'>delivered</p>
+                                                            <p>
+                                                                On{" "}
+                                                                {new Date(ord.createdAt).toLocaleDateString("en-IN", {
+                                                                    day: "numeric",
+                                                                    month: "long",
+                                                                    year: "numeric",
+                                                                })}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ) : ord.status === "returned" && (
+                                                    <div className='flex items-center gap-x-2'>
+                                                        <Image src="/assets/img/return.png" alt='' width={45} height={45} />
+                                                        <div>
+                                                            <p className='capitalize font-semibold text-[18px] text-[#f64437] leading-tight'>returned</p>
+                                                            <p>
+                                                                Your refund of <b>₹777.00</b> for the return has been processed successfully on{" "}
+                                                                {new Date(ord.createdAt).toLocaleDateString("en-IN", {
+                                                                    day: "numeric",
+                                                                    month: "long",
+                                                                    year: "numeric",
+                                                                })}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ) 
+                                            }
+                                            {
+                                                ord.items.map((item: any, j: number) => {
+                                                    return (
+                                                        <div key={j} className='bg-white shadow p-3 my-3 rounded'>
+                                                            <div className='flex gap-x-3'>
+                                                                <Image src={item.image} alt='' width={100} height={100} />
+                                                                <div>
+                                                                    <h3 className='text-[15px] font-semibold uppercase'>{item.brand}</h3>
+                                                                    <p>{item.name}</p>
+                                                                    <div className='flex items-center gap-x-2'>
+                                                                        <p>Color : {item.colors}</p>
+                                                                        <span className='text-gray-400'>|</span>
+                                                                        <p>Size : {item.productSize}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                        {
+                                            ord.status === "delivered" && (
+                                                <div>
+                                                    <Review
+                                                        productId={ord?.items[0]?.productId?._id}
+                                                    />
+                                                </div>
+                                            )
+                                        }
+                                    </div>
+                                )
+                            })
+                        ) : (
+                            <p>No Order Found</p>
+                        )
+                    )
+                }
+            </div>
+        </div>
+    )
+}
