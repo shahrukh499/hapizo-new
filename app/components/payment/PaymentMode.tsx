@@ -37,6 +37,7 @@ export default function PaymentMode() {
     const { data: cart } = useCartItems()
     const { selectedAddressId } = useAppSelector((state) => state.addressSlice);
     const { discount: couponDiscount, couponCode, appliedCoupon } = useAppSelector((state) => state.couponSlice);
+    const { user } = useAppSelector((state) => state.authSlice);
     const queryClient = useQueryClient();
     const dispatch = useAppDispatch()
     const router = useRouter()
@@ -112,7 +113,8 @@ export default function PaymentMode() {
                 dispatch(removeCoupon());
             }
             // Clear cart instantly in UI (cart page + navbar badge).
-            queryClient.setQueryData(["cartItems"], (oldData:any) => {
+            const cartQueryKey = ["cartItems", user?._id ?? "guest"];
+            queryClient.setQueryData(cartQueryKey, (oldData:any) => {
                 if (!oldData) return oldData;
                 return {
                     ...oldData,
@@ -124,7 +126,7 @@ export default function PaymentMode() {
             });
             router.push('/order-success');
             // Refresh server state in background without blocking button/loading state.
-            queryClient.invalidateQueries({ queryKey: ["cartItems"] });
+            queryClient.invalidateQueries({ queryKey: cartQueryKey });
         },
         onError: (error) => {
             dispatch(showSnackbar({ message: error.message, variant: "error" }))

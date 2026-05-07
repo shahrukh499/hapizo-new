@@ -6,6 +6,7 @@ import ReactQueryProvider from "./ReactQueryProvider";
 import Header from "./components/header/Header";
 import { Providers } from "./redux/Provider";
 import SnackbarProviderWrapper from "./components/snackbar/SnackbarProviderWrapper"
+import SnackbarCustom from "./components/snackbar/SnackbarCustom"
 import UserDetailsModal from "./components/profile/UserDetailsModal";
 
 const leagueSpartan = League_Spartan({
@@ -36,6 +37,7 @@ export default function RootLayout({
         <ReactQueryProvider>
           <Providers>
             <SnackbarProviderWrapper>
+              <SnackbarCustom />
               <Header/>
               <main>{children}</main>
               <UserDetailsModal/>

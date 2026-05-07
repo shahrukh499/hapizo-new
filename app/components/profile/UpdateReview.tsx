@@ -6,7 +6,7 @@ import { IconButton, Paper, Rating } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import ImageIcon from '@mui/icons-material/Image';
 import Image from 'next/image';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { showSnackbar } from '../snackbar/snackbarSlice';
 import { API_CONFIG, getApiUrl } from '@/app/utils/apiConfig';
 import { getAuthToken } from '@/app/utils/auth';
@@ -15,13 +15,13 @@ import { useAppDispatch } from '@/app/redux/hooks';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
-      children: React.ReactElement<any, any>;
+        children: React.ReactElement<any, any>;
     },
     ref: React.Ref<unknown>,
-  ) {
+) {
     return <Slide direction="up" ref={ref} {...props} />;
-  });
-export default function Review({ productId }:{productId:string}) {
+});
+function UpdateReview({ reviewId }: { reviewId: string }) {
     const [open, setOpen] = React.useState<boolean>(false);
     const [rating, setRating] = React.useState<any>(0);
     const [review, setReview] = React.useState<string>("");
@@ -30,21 +30,48 @@ export default function Review({ productId }:{productId:string}) {
     const fileInputRef = React.useRef<HTMLInputElement | null>(null);
     const dispatch = useAppDispatch();
 
-    //console.log(productId,'productId')
+    //console.log(reviewId,'productId')
 
-    const handleClickOpen = () => {
+    const handleClickOpen = React.useCallback(() => {
         setOpen(true);
-    };
+    }, []);
 
-    const handleClose = () => {
+    const handleClose = React.useCallback(() => {
         setOpen(false);
-    };
+    }, []);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { data: reviewData, isLoading, error } = useQuery({
+        queryKey: ["reviewData", reviewId],
+        queryFn: async () => {
+          const apiUri = getApiUrl(`${API_CONFIG.ENDPOINTS.UPDATEREVEW}/${reviewId}`);
+          const requestOptions = API_CONFIG.createRequestOptions(
+            API_CONFIG.HTTP_METHODS.GET
+          );
+    
+          const response = await fetch(apiUri, requestOptions);
+          const data = await response.json();
+    
+          if (!response.ok) {
+            throw new Error(data.message || "Failed to fetch products");
+          }
+
+          setRating(data.reviews.rating)
+          setReview(data.reviews.comment)
+          setImagePreviews(data.reviews.images)
+    
+          return data;
+        },
+        staleTime: 1000 * 60 * 60, // 1 hour
+        refetchOnWindowFocus: false,
+      });
+
+      //console.log(reviewData,"ddd");
+      
+
+    const handleFileChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files ? Array.from(e.target.files) : [];
         if (fileList.length === 0) return;
 
-        // check total limit
         if (files.length + fileList.length > 4) {
             alert("You can upload maximum 4 images only");
             e.target.value = "";
@@ -57,27 +84,23 @@ export default function Review({ productId }:{productId:string}) {
             ...prev,
             ...fileList.map(file => URL.createObjectURL(file))
         ]);
-    };
+    }, [files]);
 
-    const removeImage = (index : number) => {
-        // Clean up the object URL
+    const removeImage = React.useCallback((index: number) => {
         URL.revokeObjectURL(imagePreviews[index]);
 
-        // Get remaining files and previews
         const remainingFiles = files.filter((_, i) => i !== index);
         const remainingPreviews = imagePreviews.filter((_, i) => i !== index);
 
-        // Update state
         setFiles(remainingFiles);
         setImagePreviews(remainingPreviews);
 
-        // Update the file input
         if (fileInputRef.current) {
             const dataTransfer = new DataTransfer();
             remainingFiles.forEach(file => dataTransfer.items.add(file));
             fileInputRef.current.files = dataTransfer.files;
         }
-    };
+    }, [files, imagePreviews]);
 
     const handleReviews = async () => {
         const formData = new FormData();
@@ -89,15 +112,15 @@ export default function Review({ productId }:{productId:string}) {
             formData.append("images", file);
         });
 
-        const apiUri = getApiUrl(`${API_CONFIG.ENDPOINTS.REVIEW}/${productId}/reviews`);
-      /*   const requestOptions = API_CONFIG.createRequestOptions(
-            API_CONFIG.HTTP_METHODS.POST,
-            formData
-        ); */
-        
+        const apiUri = getApiUrl(`${API_CONFIG.ENDPOINTS.UPDATEREVEW}/${reviewId}`);
+        /*   const requestOptions = API_CONFIG.createRequestOptions(
+              API_CONFIG.HTTP_METHODS.POST,
+              formData
+          ); */
+
 
         const response = await fetch(apiUri, {
-            method: "POST",
+            method: "PUT",
             headers: {
                 Authorization: `Bearer ${getAuthToken()}`
             },
@@ -119,7 +142,7 @@ export default function Review({ productId }:{productId:string}) {
                 message: data?.message || "Review submitted successfully",
                 variant: "success"
             }));
-            setOpen(false)
+            setOpen(false);
         },
         onError: (error) => {
             dispatch(showSnackbar({
@@ -127,10 +150,9 @@ export default function Review({ productId }:{productId:string}) {
                 variant: "error"
             }));
         }
-    })
+    });
 
-    const submitReview = () => {
-
+    const submitReview = React.useCallback(() => {
         if (!rating) {
             dispatch(showSnackbar({
                 message: "Please give rating",
@@ -140,13 +162,13 @@ export default function Review({ productId }:{productId:string}) {
         }
 
         mutation.mutate();
-    };
+    }, [rating, mutation, dispatch]);
 
 
     return (
         <React.Fragment>
-            <Button variant="text" onClick={handleClickOpen}>
-                Write Review
+            <Button variant="text" sx={{color:'#ff7520', textTransform:'capitalize', fontWeight:'500'}} onClick={handleClickOpen}>
+                Veiw Review
             </Button>
             <Dialog
                 maxWidth="sm"
@@ -283,3 +305,5 @@ export default function Review({ productId }:{productId:string}) {
         </React.Fragment>
     );
 }
+
+export default React.memo(UpdateReview);

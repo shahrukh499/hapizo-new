@@ -26,6 +26,7 @@ const ENDPOINTS = {
   ORDERLIST: "/orders",
   REVIEW: "/products",
   REVIEWLIKE: "/reviews",
+  UPDATEREVEW: "/reviews",
   NAVBAR: "/navbar",
   LOGINWITHOTP: "/auth/phone-login",
   OTP: "/auth/phone-login",

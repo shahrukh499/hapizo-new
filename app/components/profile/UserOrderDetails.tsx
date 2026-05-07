@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import React from 'react'
 import Review from './Revew';
+import UpdateReview from './UpdateReview';
 
 export default function UserOrderDetails() {
 
@@ -31,7 +32,7 @@ export default function UserOrderDetails() {
     });
 
     //console.log(orders,'order');
-    
+
 
 
 
@@ -132,7 +133,7 @@ export default function UserOrderDetails() {
                                                             </p>
                                                         </div>
                                                     </div>
-                                                ) 
+                                                )
                                             }
                                             {
                                                 ord.items.map((item: any, j: number) => {
@@ -144,7 +145,7 @@ export default function UserOrderDetails() {
                                                                     <h3 className='text-[15px] font-semibold uppercase'>{item.brand}</h3>
                                                                     <p>{item.name}</p>
                                                                     <div className='flex items-center gap-x-2'>
-                                                                        <p>Color : {item.colors}</p>
+                                                                        <p>Color : {item.productColor}</p>
                                                                         <span className='text-gray-400'>|</span>
                                                                         <p>Size : {item.productSize}</p>
                                                                     </div>
@@ -157,11 +158,18 @@ export default function UserOrderDetails() {
                                         </div>
                                         {
                                             ord.status === "delivered" && (
-                                                <div>
-                                                    <Review
-                                                        productId={ord?.items[0]?.productId?._id}
+                                                ord.isReviewed ? (
+                                                    <UpdateReview
+                                                        reviewId={ord?.reviewId}
                                                     />
-                                                </div>
+
+                                                ) : (
+                                                    <div>
+                                                        <Review
+                                                            productId={ord?.items[0]?.productId?._id}
+                                                        />
+                                                    </div>
+                                                )
                                             )
                                         }
                                     </div>
