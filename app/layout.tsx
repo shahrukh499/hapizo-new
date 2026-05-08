@@ -8,9 +8,11 @@ import { Providers } from "./redux/Provider";
 import SnackbarProviderWrapper from "./components/snackbar/SnackbarProviderWrapper"
 import SnackbarCustom from "./components/snackbar/SnackbarCustom"
 import UserDetailsModal from "./components/profile/UserDetailsModal";
+import Footer from "./components/footer/Footer";
+import BottomNav from "./components/footer/BottomNavigation";
 
 const leagueSpartan = League_Spartan({
-  weight: ["200","300","400","500","600","700"],
+  weight: ["200", "300", "400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -38,9 +40,11 @@ export default function RootLayout({
           <Providers>
             <SnackbarProviderWrapper>
               <SnackbarCustom />
-              <Header/>
+              <Header />
               <main>{children}</main>
-              <UserDetailsModal/>
+              <Footer />
+              <BottomNav />
+              <UserDetailsModal />
             </SnackbarProviderWrapper>
           </Providers>
         </ReactQueryProvider>

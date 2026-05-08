@@ -86,7 +86,7 @@ function Showcase1() {
                                     </Link>
                                 ) : (
                                     // ✅ Fallback block when item[1] is missing
-                                    <Link href="">
+                                    <Link href="/privacy-policy">
                                         <Image
                                             loading="eager"
                                             src="/assets/img/coming-soon-800X400.webp"
