@@ -37,7 +37,7 @@ function HoverSlider({ thumbnails, slug, eagerLoad = false } : hoverPropsType) {
         >
           {thumbnails?.map((img:string, i:number) => (
             <SplideSlide key={i}>
-              <Link href={`products/${slug}`}>
+              <Link href={`products/${slug}`} prefetch>
                 <Image
                   className="w-full h-auto lg:rounded"
                   src={img}

@@ -1,9 +1,8 @@
 "use client";
-
+import dynamic from "next/dynamic";
 import { API_CONFIG, getApiUrl } from "@/app/utils/apiConfig";
-import { usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
-import ProductDetailsImages from "../ProductDetailsImages";
 import {
   Rating,
   Skeleton,
@@ -14,76 +13,73 @@ import {
 import AddCartsButton from "@/app/components/products/AddCartsButton";
 import Image from "next/image";
 import DOMPurify from "dompurify";
-import ProductMoreDetails from "@/app/components/ProductMoreDetails";
 import WishlistButton from "@/app/components/products/WishlistButton";
-import DetailsTab from "@/app/components/DetailsTab";
 import { useQuery } from "@tanstack/react-query";
+const ProductDetailsImages = dynamic(() => import("../ProductDetailsImages"), {
+  loading: () => <div style={{ height: 500 }} />,
+});
+const DetailsTab = dynamic(() => import("@/app/components/DetailsTab"));
+const ProductMoreDetails = dynamic(() => import("@/app/components/ProductMoreDetails"));
 
 function ProductDetails() {
   // State management
-  const [products, setProducts] = useState<{ status?: number; response: any } | null>(null);
   const [size, setSize] = useState<string | null>(null);
   const [color, setColor] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Get product slug from URL
-  const slug = usePathname();
-  const productUrl = slug.split("/")[2];
-
-  //console.log(productUrl,'slug');
-  
+  const params = useParams();
+  const productUrl = params?.productDetails;
 
   // Data fetching
+  const fetchProductDetails = async () => {
+    const apiUri = getApiUrl(
+      `${API_CONFIG.ENDPOINTS.PRODUCTDETAILS}/${productUrl}`
+    );
+
+    const requestOptions = API_CONFIG.createRequestOptions(
+      API_CONFIG.HTTP_METHODS.GET
+    );
+
+    const response = await fetch(apiUri, {
+      ...requestOptions,
+      next: { revalidate: 60 }, // 🔥 very important
+    });
+    const data = await response.json();
+
+    if (data.status !== API_CONFIG.STATUS_CODES.SUCCESS) {
+      throw new Error("Product not found");
+    }
+
+    return data;
+  };
+
+  const {
+    data: products,
+    isLoading,
+    error,
+  } = useQuery<any, Error>({
+    queryKey: ["product", productUrl],
+    queryFn: fetchProductDetails,
+    staleTime: 1000 * 60 * 5, // cache 5 min
+    refetchOnWindowFocus: false,
+  });
+
   useEffect(() => {
-    const fetchProductDetails = async () => {
-      setIsLoading(true);
-      setError(null);
+    if (!products?.response) return;
 
-      try {
-        const apiUri = getApiUrl(
-          `${API_CONFIG.ENDPOINTS.PRODUCTDETAILS}/${productUrl}`
-        );
-        const requestOptions = API_CONFIG.createRequestOptions(
-          API_CONFIG.HTTP_METHODS.GET
-        );
+    const firstVariant = products.response.variants?.[0];
 
-        const response = await fetch(apiUri, requestOptions);
+    setColor(firstVariant?.color?.name || null);
 
-        /* if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        } */
+    const firstVariantSizes = firstVariant?.sizes || [];
 
-        const data = await response.json();
-
-        if (data.status === API_CONFIG.STATUS_CODES.SUCCESS) {
-          setProducts(data);
-          const firstVariant = data?.response?.variants?.[0];
-          setColor(firstVariant?.color?.name || null);
-
-          const firstVariantSizes = firstVariant?.sizes || [];
-          if (
-            firstVariantSizes.length === 1 &&
-            firstVariantSizes[0].label &&
-            firstVariantSizes[0].label.replace(/\s+/g, "").toLowerCase() === "onesize"
-          ) {
-            setSize(firstVariantSizes[0].label);
-          } else {
-            setSize(null);
-          }
-        } else {
-          setError("Product not found");
-        }
-      } catch (error : any) {
-        console.error("Fetch error:", error.message);
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProductDetails();
-  }, [productUrl]);
+    if (
+      firstVariantSizes.length === 1 &&
+      firstVariantSizes[0].label?.toLowerCase().replace(/\s+/g, "") === "onesize"
+    ) {
+      setSize(firstVariantSizes[0].label);
+    }
+  }, [products]);
 
   const handleProdutsReview = async () => {
     const apiUri = getApiUrl(`${API_CONFIG.ENDPOINTS.REVIEW}/${productUrl}/reviews`);
@@ -91,7 +87,10 @@ function ProductDetails() {
       API_CONFIG.HTTP_METHODS.GET
     );
 
-    const response = await fetch(apiUri, requestOptions);
+    const response = await fetch(apiUri, {
+      ...requestOptions,
+      next: { revalidate: 60 },
+    });
     const data = await response.json();
 
     if (!response.ok) {
@@ -101,9 +100,10 @@ function ProductDetails() {
     return data;
   };
 
-  const { data: review, isLoading : revLoading } = useQuery({
+  const { data: review, isLoading: revLoading } = useQuery({
     queryKey: ["reviewKey", productUrl],
     queryFn: handleProdutsReview,
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
   });
 
@@ -127,16 +127,16 @@ function ProductDetails() {
     textTransform: 'capitalize'
   }
 
-  const product = products?.response;
-  const variants = product?.variants || [];
-  const getColorValue = (variantColor : string | { name?: string; hex?: string; image?: string } | null | undefined) => {
+  const product = useMemo(() => products?.response, [products]);
+  const variants = useMemo(() => product?.variants || [], [product]);
+  const getColorValue = (variantColor: string | { name?: string; hex?: string; image?: string } | null | undefined) => {
     if (!variantColor) return null;
     if (typeof variantColor === "string") return variantColor;
     return variantColor.name || null;
   };
 
   const getColorBackground = (
-    variantColor : string | { name?: string; hex?: string; image?: string } | null | undefined
+    variantColor: string | { name?: string; hex?: string; image?: string } | null | undefined
   ) => {
     if (!variantColor) return "#fff";
     if (typeof variantColor === "string") return variantColor;
@@ -148,7 +148,7 @@ function ProductDetails() {
   const activeVariant = useMemo(() => {
     if (!variants.length) return null;
     return (
-      variants.find((variant : { color?: string | { name?: string; hex?: string; image?: string } | null }) => getColorValue(variant?.color) === color) || variants[0]
+      variants.find((variant: { color?: string | { name?: string; hex?: string; image?: string } | null }) => getColorValue(variant?.color) === color) || variants[0]
     );
   }, [variants, color]);
   const selectedColorValue = getColorValue(activeVariant?.color) || color;
@@ -160,7 +160,7 @@ function ProductDetails() {
     }
 
     const activeSizes = activeVariant.sizes || [];
-    const hasSelectedSize = activeSizes.some((item : { label?: string }) => item.label === size);
+    const hasSelectedSize = activeSizes.some((item: { label?: string }) => item.label === size);
     if (hasSelectedSize) return;
 
     if (
@@ -208,7 +208,7 @@ function ProductDetails() {
       <div className="max-w-full">
         <p className="text-[15px] mb-2 uppercase font-semibold">More Colors</p>
         <div className="flex gap-2">
-          {variants.map((variant : { _id?: string; color?: string | { name?: string; hex?: string; image?: string } | null | undefined }, idx:number) => (
+          {variants.map((variant: { _id?: string; color?: string | { name?: string; hex?: string; image?: string } | null | undefined }, idx: number) => (
             <div key={variant._id || idx} className="flex flex-col items-center">
               <Tooltip title={getColorValue(variant?.color) || "Color"} placement="top-start">
                 <button
@@ -247,9 +247,9 @@ function ProductDetails() {
         exclusive
         onChange={handleSizeSelection}
         aria-label="size selection"
-        sx={{display:'block'}}
+        sx={{ display: 'block' }}
       >
-        {(activeVariant?.sizes || []).map((ele : { label?: string; available?: boolean }, i:number) => (
+        {(activeVariant?.sizes || []).map((ele: { label?: string; available?: boolean }, i: number) => (
           <ToggleButton
             key={i}
             value={ele.label || ''}
@@ -259,7 +259,7 @@ function ProductDetails() {
               px: 3,
               py: 1,
               mr: 1,
-              mb:1,
+              mb: 1,
               border: '1px solid',
               borderLeft: '1px solid #bdbdbd !important',
               borderColor: 'grey.400',
@@ -346,7 +346,7 @@ function ProductDetails() {
         <div className="container mx-auto px-2 md:px-12">
           <div className="h-[58vh] flex justify-center items-center flex-col">
             <Image src='/assets/img/bag.png' alt="bag" width={100} height={100} />
-            <p className="mt-3">{error}</p>
+            <p className="mt-3">{error.message}</p>
           </div>
         </div>
       </section>
@@ -359,7 +359,11 @@ function ProductDetails() {
         <div className="container mx-auto px-2 md:px-12">
           <div className="h-[58vh] flex justify-center items-center flex-col">
             <Image src='/assets/img/bag.png' alt="bag" width={100} height={100} />
-            <p className="mt-3">{error}</p>
+            <p className="mt-3">
+              {typeof error === "object" && error !== null && "message" in error
+                ? (error as any).message
+                : "Something went wrong"}
+            </p>
           </div>
         </div>
       </section>
@@ -392,24 +396,24 @@ function ProductDetails() {
               </h1>
             </div>
             {
-             review?.reviews?.length > 0 && (
+              review?.reviews?.length > 0 && (
                 <div className="flex items-center gap-x-2">
                   {
                     revLoading ? (
                       <p>Loading...</p>
                     ) : (
-                        <Rating
-                          name="half-rating-read"
-                          value={review?.ratingSummary?.averageRating || 0}
-                          precision={0.5}
-                          size="small"
-                          readOnly
-                        />
+                      <Rating
+                        name="half-rating-read"
+                        value={review?.ratingSummary?.averageRating || 0}
+                        precision={0.5}
+                        size="small"
+                        readOnly
+                      />
                     )
                   }
                   <small className="text-gray-500">{review?.ratingSummary?.totalReviews} reviews</small>
                 </div>
-             )
+              )
             }
 
             <div className="max-w-full w-[500px]">
@@ -440,7 +444,7 @@ function ProductDetails() {
           </div>
         </div>
         <div className="pt-6">
-          <DetailsTab 
+          <DetailsTab
             features={products?.response?.features}
             bodyHtml={sanitizedDescription}
             review={review}

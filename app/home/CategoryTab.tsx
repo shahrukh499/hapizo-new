@@ -72,7 +72,7 @@ function CategoryTab({products} : any) {
                                             </div>
                                             <div className='pt-1'>
                                                 <span className='text-[16px] text-[#ff741f] font-semibold uppercase'>{item.brand}</span>
-                                                <Link href={`products/${item.slug || item._id}`}>
+                                                <Link href={`products/${item.slug || item._id}`} prefetch>
                                                     <h3 className='font-medium text-[15px] lg:text-[15px] leading-tight mb-1 line-clamp-1'>{item.name}</h3>
                                                 </Link>
                                                 <div className='flex gap-x-2'>
