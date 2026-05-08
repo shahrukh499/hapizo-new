@@ -66,6 +66,7 @@ const createRequestOptions = (method:any, body = null) => {
     method,
     headers: createHeaders(), // Use createHeaders to get dynamic headers
     redirect: "follow",
+    cache: "force-cache"
   };
 
   if (
