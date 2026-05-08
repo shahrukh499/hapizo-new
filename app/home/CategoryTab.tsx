@@ -74,9 +74,9 @@ function CategoryTab({products} : any) {
                                             </div>
                                             <div className='pt-1'>
                                                 <span className='text-[16px] text-[#ff741f] font-semibold uppercase'>{item.brand}</span>
-                                                <Link href={`products/${item.slug || item._id}`}>
-                                                    <h3 className='font-medium text-[15px] lg:text-[15px] leading-tight mb-1 line-clamp-1'>{item.name}</h3>
-                                                </Link>
+                                                <button onClick={()=> history.pushState(null,"",`products/${item.slug || item._id}`)} className='font-medium text-[15px] lg:text-[15px] leading-tight mb-1 line-clamp-1 cursor-pointer'>
+                                                    {item.name}
+                                                </button>
                                                 <div className='flex gap-x-2'>
                                                     <p className='text-[14px]'>₹{item.variants[0].price}</p>
                                                     <p className="text-gray-400 text-[14px] line-through flex items-center">₹{parseInt(item.variants[0].price * (item.variants[0].discount / 100) + item.variants[0].price)}</p>
