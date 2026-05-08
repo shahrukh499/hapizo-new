@@ -4,6 +4,7 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import Link from 'next/link';
 import HoverSlider from './HoverSlider';
+import { useRouter } from 'next/navigation';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -36,6 +37,7 @@ function CustomTabPanel(props: TabPanelProps) {
 
 function CategoryTab({products} : any) {
   const [value, setValue] = React.useState(0);
+  const router = useRouter()
 
  /*  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -74,7 +76,7 @@ function CategoryTab({products} : any) {
                                             </div>
                                             <div className='pt-1'>
                                                 <span className='text-[16px] text-[#ff741f] font-semibold uppercase'>{item.brand}</span>
-                                                <button onClick={()=> history.pushState(null,"",`products/${item.slug || item._id}`)} className='font-medium text-[15px] lg:text-[15px] leading-tight mb-1 line-clamp-1 cursor-pointer'>
+                                                <button onClick={()=> router.push(`products/${item.slug || item._id}`)} className='font-medium text-[15px] lg:text-[15px] leading-tight mb-1 line-clamp-1 cursor-pointer'>
                                                     {item.name}
                                                 </button>
                                                 <div className='flex gap-x-2'>
