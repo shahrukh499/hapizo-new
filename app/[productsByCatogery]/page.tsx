@@ -5,11 +5,12 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
-import BrandsFilter from "./filters/BrandsFilter";
-import CategoryFilter from "./filters/CategoryFilter";
-import PriceFilter from "./filters/PriceFilter";
+import BrandsFilter from "../components/filters/BrandsFilter";
+import CategoryFilter from "../components/filters/CategoryFilter";
+import PriceFilter from "../components/filters/PriceFilter";
 import { useQuery } from "@tanstack/react-query";
 import HoverSplide from "../home/HoverSlider";
+import FilterDrawer from "../components/filters/FilterDrawer";
 
 
 
@@ -29,7 +30,10 @@ function ProductsByCatogery() {
       API_CONFIG.HTTP_METHODS.GET
     );
 
-    const response = await fetch(apiUri, requestOptions);
+    const response = await fetch(apiUri, {
+      ...requestOptions,
+      next: { revalidate: 60 },
+    });
     const data = await response.json();
 
     if (data.status === API_CONFIG.STATUS_CODES.SUCCESS) {
@@ -52,22 +56,30 @@ function ProductsByCatogery() {
     staleTime: 1000 * 60 * 5
   });
 
-  console.log(products, 'products');
+  //console.log(products, 'products');
 
 
   return (
-    <section className="py-12">
+    <section className="py-6 lg:py-12">
       <div className="container mx-auto px-2">
         <h2 className="text-[20px] lg:text-[25px] font-semibold">Product List</h2>
         <div className="flex flex-wrap border-t border-gray-200">
-          <div className="w-full lg:w-[20%] lg:max-w-[300px] px-1.5 border-r border-gray-200">
-            <div className="py-1.5">
+          <div className="w-full lg:w-[20%] lg:max-w-[300px] px-1.5 lg:border-r border-gray-200">
+            <div className="py-1.5 hidden lg:block">
               <div>
                 <h2 className="text-[20px] font-semibold">Filters</h2>
               </div>
               <CategoryFilter />
               <BrandsFilter />
               <PriceFilter />
+            </div>
+            <div className="block lg:hidden">
+              <div className="pt-3">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-[20px] font-semibold">Filters</h2>
+                  <FilterDrawer/>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -125,7 +137,7 @@ function ProductsByCatogery() {
                           <span className="capitalize text-[13px] text-gray-700">
                             {items.brand}
                           </span>
-                          <Link href={`products/${items.slug}`}>
+                          <Link href={`products/${items.slug}`} prefetch>
                             <h3 className="text-[16px] font-semibold leading-tight line-clamp-2">
                               {items.name}
                             </h3>

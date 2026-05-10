@@ -3,6 +3,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Skeleton } from "@mui/material";
 
 const valuetext = (value: number) => {
     return `${value}`;
@@ -25,7 +26,7 @@ function useDebounce<T>(value: T, delay: number): T {
     return debouncedValue;
 }
 
-export default function RangeSlider() {
+export default function PriceFilter() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -79,10 +80,10 @@ export default function RangeSlider() {
       );
 
     return (
-        <Box sx={{ maxWidth: "100%", width: 220, mt: "10px" }}>
+        <Box sx={{ maxWidth: "100%", width: 220 }}>
             <h3 className="text-[15px] font-semibold">Price Range</h3>
             {!isMounted ? (
-                <p>Loading...</p>
+                <Skeleton variant="text" sx={{width:"90%"}} />
             ) : (
                 <Slider
                     getAriaLabel={() => "Price range"}

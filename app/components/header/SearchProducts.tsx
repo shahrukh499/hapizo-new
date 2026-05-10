@@ -11,6 +11,7 @@ function SearchProducts() {
     const [search, setSearch] = React.useState("");
     const [suggestions, setSuggestions] = React.useState([]);
     const router = useRouter();
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -29,7 +30,7 @@ function SearchProducts() {
 
             try {
                 const res = await fetch(
-                    `https://blushbox-panel.vercel.app/api/v1/products/search?q=${encodeURIComponent(search)}`
+                    `${baseUrl}/products/search?q=${encodeURIComponent(search)}`
                 );
                 const data = await res.json();
                 setSuggestions(data.products || []);

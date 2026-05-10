@@ -25,11 +25,15 @@ const ENDPOINTS = {
   ORDERPLACE: "/orders",
   ORDERLIST: "/orders",
   REVIEW: "/products",
+  CategoryList: "/products/category-list",
+  BrandList: "/products/brand-list",
   REVIEWLIKE: "/reviews",
   UPDATEREVEW: "/reviews",
   NAVBAR: "/navbar",
   LOGINWITHOTP: "/auth/phone-login",
   OTP: "/auth/phone-login",
+  verifyPayment: "/verify-payment",
+  razorpayOrder: "/create-razorpay-order"
 };
 
 /**
