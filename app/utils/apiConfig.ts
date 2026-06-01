@@ -33,7 +33,8 @@ const ENDPOINTS = {
   LOGINWITHOTP: "/auth/phone-login",
   OTP: "/auth/phone-login",
   verifyPayment: "/verify-payment",
-  razorpayOrder: "/create-razorpay-order"
+  razorpayOrder: "/create-razorpay-order",
+  CANCELORDER: "/cancel-order"
 };
 
 /**

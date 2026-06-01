@@ -228,19 +228,6 @@ export default function PaymentMode() {
                     );
                     const verifyRes = await fetch(apiUri, requestOptions);
 
-                    /*  const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/verify-payment`, {
-                         method: "POST",
-                         headers: {
-                             "Content-Type": "application/json",
-                             "Authorization": `Bearer ${token}`, // 🔥 IMPORTANT
-                         },
-                         body: JSON.stringify({
-                             ...response,
-                             addressId: selectedAddressId,
-                             couponCode: couponCode,
-                         }),
-                     }); */
-
                     const data = await verifyRes.json();
 
                     if (!verifyRes.ok || !data.success) {

@@ -1,12 +1,18 @@
 import { API_CONFIG, getApiUrl } from '@/app/utils/apiConfig';
 import { Button, Skeleton } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
-import React from 'react'
+import React, { useState } from 'react'
 import Review from './Revew';
 import UpdateReview from './UpdateReview';
+import { useAppDispatch } from '@/app/redux/hooks';
+import { showSnackbar } from '../snackbar/snackbarSlice';
 
 export default function UserOrderDetails() {
+    const [selectedItems, setSelectedItems] = useState<string[]>([]);
+    const dispatch = useAppDispatch();
+
+    //console.log(selectedItems,"ss")
 
     const handleUserOrders = async () => {
         const apiUri = getApiUrl(API_CONFIG.ENDPOINTS.ORDERLIST);
@@ -33,6 +39,36 @@ export default function UserOrderDetails() {
 
     //console.log(orders,'order');
 
+    const handleMultiCancel = async (id: any) => {
+        const payload = {
+            orderId: id,
+            itemIds: selectedItems,
+        }
+        const apiUri = getApiUrl(API_CONFIG.ENDPOINTS.CANCELORDER);
+        const requestOptions = API_CONFIG.createRequestOptions(
+            API_CONFIG.HTTP_METHODS.POST,
+            payload as any
+        );
+
+        const response = await fetch(apiUri, requestOptions);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to fetch products");
+        }
+
+        return data;
+    };
+
+    const mutation = useMutation({
+        mutationFn: handleMultiCancel,
+        onSuccess: (data) => {
+            dispatch(showSnackbar({ message: data.message || "Order Cancel Successfully", variant: "success" }));
+        },
+        onError: (error) => {
+            dispatch(showSnackbar({ message: error.message, variant: "error" }));
+        },
+    })
 
 
 
@@ -91,8 +127,8 @@ export default function UserOrderDetails() {
                                                             <p>
                                                                 On{" "}
                                                                 {new Date(
-                                                                    new Date(ord.createdAt).setDate(
-                                                                        new Date(ord.createdAt).getDate()
+                                                                    new Date(ord.updatedAt).setDate(
+                                                                        new Date(ord.updatedAt).getDate()
                                                                     )
                                                                 ).toLocaleDateString("en-IN", {
                                                                     day: "numeric",
@@ -110,7 +146,7 @@ export default function UserOrderDetails() {
                                                             <p className='capitalize font-semibold text-[18px] text-[#05d134] leading-tight'>delivered</p>
                                                             <p>
                                                                 On{" "}
-                                                                {new Date(ord.createdAt).toLocaleDateString("en-IN", {
+                                                                {new Date(ord.updatedAt).toLocaleDateString("en-IN", {
                                                                     day: "numeric",
                                                                     month: "long",
                                                                     year: "numeric",
@@ -125,7 +161,7 @@ export default function UserOrderDetails() {
                                                             <p className='capitalize font-semibold text-[18px] text-[#f64437] leading-tight'>returned</p>
                                                             <p>
                                                                 Your refund of <b>₹777.00</b> for the return has been processed successfully on{" "}
-                                                                {new Date(ord.createdAt).toLocaleDateString("en-IN", {
+                                                                {new Date(ord.updatedAt).toLocaleDateString("en-IN", {
                                                                     day: "numeric",
                                                                     month: "long",
                                                                     year: "numeric",
@@ -138,9 +174,26 @@ export default function UserOrderDetails() {
                                             {
                                                 ord.items.map((item: any, j: number) => {
                                                     return (
-                                                        <div key={j} className='bg-white shadow p-3 my-3 rounded'>
+                                                        <div key={j} className={`bg-white shadow p-3 my-3 rounded ${item.status == "cancelled" ? "grayscale-100" : ""} `}>
                                                             <div className='flex gap-x-3'>
-                                                                <Image src={item.image} alt='' width={100} height={100} />
+                                                                {
+                                                                    ord.status !== "cancelled" && ord.status !== "delivered" ? (
+                                                                        <div>
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={selectedItems.includes(item._id)}
+                                                                                onChange={(e) => {
+                                                                                    if (e.target.checked) {
+                                                                                        setSelectedItems(prev => [...prev, item._id]);
+                                                                                    } else {
+                                                                                        setSelectedItems(prev => prev.filter(id => id !== item._id));
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                    ) : null
+                                                                }
+                                                                <Image src={item.image} alt='cd' width={100} height={100} />
                                                                 <div>
                                                                     <h3 className='text-[15px] font-semibold uppercase'>{item.brand}</h3>
                                                                     <p>{item.name}</p>
@@ -171,6 +224,19 @@ export default function UserOrderDetails() {
                                                     </div>
                                                 )
                                             )
+                                        }
+                                        {
+                                            ord.status !== "cancelled" && ord.status !== "delivered" ? (
+                                                <div>
+                                                    <Button
+                                                        disabled={selectedItems.length === 0}
+                                                        onClick={() => mutation.mutate(ord._id)}
+                                                    >
+                                                        Cancel Selected Items
+                                                    </Button>
+                                                </div>
+
+                                            ) : null
                                         }
                                     </div>
                                 )
