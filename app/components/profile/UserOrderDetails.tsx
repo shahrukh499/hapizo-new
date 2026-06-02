@@ -9,10 +9,10 @@ import { useAppDispatch } from '@/app/redux/hooks';
 import { showSnackbar } from '../snackbar/snackbarSlice';
 
 export default function UserOrderDetails() {
-    const [selectedItems, setSelectedItems] = useState<string[]>([]);
+    const [selectedItems, setSelectedItems] = useState<{ [orderId: string]: string[] }>({});
     const dispatch = useAppDispatch();
 
-    //console.log(selectedItems,"ss")
+    //console.log(selectedItems, "ss")
 
     const handleUserOrders = async () => {
         const apiUri = getApiUrl(API_CONFIG.ENDPOINTS.ORDERLIST);
@@ -181,13 +181,23 @@ export default function UserOrderDetails() {
                                                                         <div>
                                                                             <input
                                                                                 type="checkbox"
-                                                                                checked={selectedItems.includes(item._id)}
+                                                                                checked={selectedItems[ord._id]?.includes(item._id) || false}
                                                                                 onChange={(e) => {
-                                                                                    if (e.target.checked) {
-                                                                                        setSelectedItems(prev => [...prev, item._id]);
-                                                                                    } else {
-                                                                                        setSelectedItems(prev => prev.filter(id => id !== item._id));
-                                                                                    }
+                                                                                    setSelectedItems(prev => {
+                                                                                        const current = prev[ord._id] || [];
+
+                                                                                        if (e.target.checked) {
+                                                                                            return {
+                                                                                                ...prev,
+                                                                                                [ord._id]: [...current, item._id]
+                                                                                            };
+                                                                                        } else {
+                                                                                            return {
+                                                                                                ...prev,
+                                                                                                [ord._id]: current.filter(id => id !== item._id)
+                                                                                            };
+                                                                                        }
+                                                                                    });
                                                                                 }}
                                                                             />
                                                                         </div>
@@ -204,35 +214,45 @@ export default function UserOrderDetails() {
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            {
+                                                                item.status === "delivered" && (
+                                                                    item.isReviewed ? (
+                                                                        <UpdateReview
+                                                                            reviewId={item.reviewId}
+                                                                        />
+                                                                    ) : (
+                                                                        <div>
+                                                                            <Review
+                                                                                productId={item.productId?._id}
+                                                                            />
+                                                                        </div>
+                                                                    )
+                                                                )
+                                                            }
                                                         </div>
                                                     )
                                                 })
                                             }
                                         </div>
-                                        {
-                                            ord.status === "delivered" && (
-                                                ord.isReviewed ? (
-                                                    <UpdateReview
-                                                        reviewId={ord?.reviewId}
-                                                    />
 
-                                                ) : (
-                                                    <div>
-                                                        <Review
-                                                            productId={ord?.items[0]?.productId?._id}
-                                                        />
-                                                    </div>
-                                                )
-                                            )
-                                        }
                                         {
                                             ord.status !== "cancelled" && ord.status !== "delivered" ? (
                                                 <div>
                                                     <Button
-                                                        disabled={selectedItems.length === 0}
-                                                        onClick={() => mutation.mutate(ord._id)}
+                                                        variant="contained"
+                                                        disabled={!selectedItems[ord._id] || selectedItems[ord._id].length === 0}
+                                                        onClick={() => mutation.mutate({
+                                                            orderId: ord._id,
+                                                            items: selectedItems[ord._id]
+                                                        })}
+                                                        sx={{
+                                                            py: "10px",
+                                                            backgroundColor: "#313647",
+                                                            color: "#FFF",
+                                                            textTransform: "capitalize",
+                                                        }}
                                                     >
-                                                        Cancel Selected Items
+                                                        Cancel Order
                                                     </Button>
                                                 </div>
 

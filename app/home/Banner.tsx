@@ -41,7 +41,7 @@ const Banner = () => {
         return (
             <Skeleton variant="rectangular" animation="wave" width={`100%`} height={500} />
         )
-    } 
+    }
 
     return (
         <div>
@@ -55,11 +55,21 @@ const Banner = () => {
             >
                 {
                     banner?.banners.length > 0 ? (
-                        banner?.banners.map((ele:any, i:number) => {
+                        banner?.banners.map((ele: any, i: number) => {
                             return (
                                 <SplideSlide key={i} className={ele.isActive ? `block` : 'hidden'}>
-                                    <Link href={`${ele.link}`}>
-                                        <Image loading="eager" className="block m-auto" src={ele.imageUrl} alt="banner" width={1900} height={600} />
+                                    <Link href={ele.link}>
+                                        <picture>
+                                            <source media="(max-width: 768px)" srcSet={ele.mobileImageUrl} />
+                                            <Image
+                                                loading="eager"
+                                                src={ele.imageUrl}
+                                                alt="banner"
+                                                className="m-auto w-full h-auto"
+                                                width={1900}
+                                                height={600}
+                                            />
+                                        </picture>
                                     </Link>
                                 </SplideSlide>
                             )

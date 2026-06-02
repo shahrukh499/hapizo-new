@@ -6,7 +6,7 @@ import { IconButton, Paper, Rating } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import ImageIcon from '@mui/icons-material/Image';
 import Image from 'next/image';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { showSnackbar } from '../snackbar/snackbarSlice';
 import { API_CONFIG, getApiUrl } from '@/app/utils/apiConfig';
 import { getAuthToken } from '@/app/utils/auth';
@@ -29,8 +29,9 @@ function UpdateReview({ reviewId }: { reviewId: string }) {
     const [files, setFiles] = React.useState<File[]>([]);
     const fileInputRef = React.useRef<HTMLInputElement | null>(null);
     const dispatch = useAppDispatch();
+    const queryClient = useQueryClient()
 
-    //console.log(reviewId,'productId')
+    console.log(reviewId,'productId')
 
     const handleClickOpen = React.useCallback(() => {
         setOpen(true);
@@ -39,34 +40,40 @@ function UpdateReview({ reviewId }: { reviewId: string }) {
     const handleClose = React.useCallback(() => {
         setOpen(false);
     }, []);
+    
 
     const { data: reviewData, isLoading, error } = useQuery({
         queryKey: ["reviewData", reviewId],
         queryFn: async () => {
-          const apiUri = getApiUrl(`${API_CONFIG.ENDPOINTS.UPDATEREVEW}/${reviewId}`);
-          const requestOptions = API_CONFIG.createRequestOptions(
-            API_CONFIG.HTTP_METHODS.GET
-          );
-    
-          const response = await fetch(apiUri, requestOptions);
-          const data = await response.json();
-    
-          if (!response.ok) {
-            throw new Error(data.message || "Failed to fetch products");
-          }
+            const apiUri = getApiUrl(`${API_CONFIG.ENDPOINTS.UPDATEREVEW}/${reviewId}`);
+            const requestOptions = API_CONFIG.createRequestOptions(
+                API_CONFIG.HTTP_METHODS.GET
+            );
 
-          setRating(data.reviews.rating)
-          setReview(data.reviews.comment)
-          setImagePreviews(data.reviews.images)
-    
-          return data;
+            const response = await fetch(apiUri, requestOptions);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to fetch products");
+            }
+
+            return data;
         },
+        enabled: open && !!reviewId,
         staleTime: 1000 * 60 * 60, // 1 hour
         refetchOnWindowFocus: false,
-      });
+    });
 
-      //console.log(reviewData,"ddd");
-      
+    React.useEffect(() => {
+        if (reviewData?.reviews) {
+            setRating(reviewData.reviews.rating);
+            setReview(reviewData.reviews.comment);
+            setImagePreviews(reviewData.reviews.images || []);
+        }
+    }, [reviewData]);
+
+    //console.log(reviewData,"ddd");
+
 
     const handleFileChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files ? Array.from(e.target.files) : [];
@@ -143,6 +150,7 @@ function UpdateReview({ reviewId }: { reviewId: string }) {
                 variant: "success"
             }));
             setOpen(false);
+            queryClient.invalidateQueries({queryKey : ["orders"]})
         },
         onError: (error) => {
             dispatch(showSnackbar({
@@ -167,7 +175,7 @@ function UpdateReview({ reviewId }: { reviewId: string }) {
 
     return (
         <React.Fragment>
-            <Button variant="text" sx={{color:'#ff7520', textTransform:'capitalize', fontWeight:'500'}} onClick={handleClickOpen}>
+            <Button variant="text" sx={{ color: '#ff7520', textTransform: 'capitalize', fontWeight: '600' }} onClick={handleClickOpen}>
                 Veiw Review
             </Button>
             <Dialog

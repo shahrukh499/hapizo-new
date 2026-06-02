@@ -145,7 +145,13 @@ export default function Review({ productId }:{productId:string}) {
 
     return (
         <React.Fragment>
-            <Button variant="text" onClick={handleClickOpen}>
+            <Button variant="text" onClick={handleClickOpen}
+            sx={{
+                color:'#ff741f',
+                fontWeight:'600',
+                textTransform:'capitalize'
+            }}
+            >
                 Write Review
             </Button>
             <Dialog
