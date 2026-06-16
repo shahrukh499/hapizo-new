@@ -12,7 +12,7 @@ function Footer() {
   return (
     <Box 
       component="footer" 
-      sx={{backgroundColor:'#f1f1f1', display: shoulHide ? 'none' : ''}}>
+      sx={{backgroundColor:'#f1f1f1', display: shoulHide ? 'none' : '', pb:{md:'0',xs:'55px'}}}>
         <p className='text-center py-3'>© {new Date().getFullYear()} Hapizo. All rights reserved.</p>
     </Box>
   )

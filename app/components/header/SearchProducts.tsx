@@ -5,20 +5,23 @@ import SearchIcon from "@mui/icons-material/Search";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
+import { handleCloseSearchModal, handleOpenSearchModal } from "./searchSlice";
 
 function SearchProducts() {
-    const [open, setOpen] = React.useState(false);
     const [search, setSearch] = React.useState("");
     const [suggestions, setSuggestions] = React.useState([]);
+    const { isOpenSearchModal } = useAppSelector((state) => state.searchSlice)
+    const dispatch = useAppDispatch();
     const router = useRouter();
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
     const handleClickOpen = () => {
-        setOpen(true);
+        dispatch(handleOpenSearchModal(true))
     };
 
     const handleClose = () => {
-        setOpen(false);
+        dispatch(handleCloseSearchModal(false))
     };
 
     React.useEffect(() => {
@@ -43,7 +46,7 @@ function SearchProducts() {
         return () => clearTimeout(delayDebounce);
     }, [search]);
 
-    const handleSearch = (e : any) => {
+    const handleSearch = (e: any) => {
         e.preventDefault();
         if (!search.trim()) return;
         router.push(`/products?search=${encodeURIComponent(search)}`);
@@ -56,37 +59,44 @@ function SearchProducts() {
                 variant="outlined"
                 size="small"
                 sx={{
-                    borderColor:"#ccc",
-                    borderRadius: "10px",
-                    width: { xs: "auto", md: "260px" },
+                    borderColor: "#ccc",
+                    borderRadius: "50px",
+                    width: { xs: "auto", md: "360px" },
                     display: "flex",
                     justifyContent: "start",
                     gap: "5px",
                     alignItems: "center",
-                    color:"#525252"
+                    color: "#525252",
+                    textTransform:'capitalize'
                 }}
             >
                 <SearchIcon /> <span className="hidden md:block">Search...</span>
             </Button>
             <Dialog
-                open={open}
+                open={isOpenSearchModal}
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
+                sx={{
+                    "& .MuiDialog-paper": {
+                    width: "calc(100% - 15px)",
+                    margin: "11px",
+                    }
+                }}
             >
                 <div className="relative">
-                <form onSubmit={handleSearch}>
-                    <div className="border-b border-gray-400 sticky top-0 flex items-center gap-x-2 px-4 ">
-                        <SearchIcon />
-                        <input
-                            onChange={(e) => setSearch(e.target.value)}
-                            value={search}
-                            className="w-full px-2 py-3 outline-none"
-                            type="text"
-                            placeholder="Search..."
-                        />
-                    </div>
-                </form>
+                    <form onSubmit={handleSearch}>
+                        <div className="border-b border-gray-400 sticky top-0 flex items-center gap-x-2 px-4">
+                            <SearchIcon />
+                            <input
+                                onChange={(e) => setSearch(e.target.value)}
+                                value={search}
+                                className="w-full px-2 py-3 outline-none"
+                                type="text"
+                                placeholder="Search..."
+                            />
+                        </div>
+                    </form>
                     {search == "" ? (
                         <div className="p-3 h-[500px] overflow-y-auto">
                             <div className="mt-3 mb-2 px-1.5">
@@ -165,7 +175,7 @@ function SearchProducts() {
                             <div>
                                 {suggestions.length > 0 && (
                                     <ul className="absolute left-0 w-full mt-1 rounded-lg max-h-60 overflow-auto z-50">
-                                        {suggestions.map((item : any) => (
+                                        {suggestions.map((item: any) => (
                                             <li
                                                 key={item._id}
                                                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"

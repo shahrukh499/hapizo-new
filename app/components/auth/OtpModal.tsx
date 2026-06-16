@@ -13,6 +13,7 @@ import Image from 'next/image';
 import { setAuthCookie } from '@/app/utils/auth';
 import { TransitionProps } from '@mui/material/transitions';
 import { useAppDispatch, useAppSelector } from '@/app/redux/hooks';
+import { CircularProgress } from '@mui/material';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -171,6 +172,14 @@ export default function OtpModal() {
                 slots={{
                     transition: Transition,
                 }}
+                sx={{
+                    "& .MuiDialog-paper": {
+                      margin:'5px',
+                      width:'100%'
+                    }
+                  }}
+                  fullWidth
+                maxWidth="xs"
                 keepMounted
                 onClose={handleClose}
                 aria-describedby="alert-dialog-slide-description"
@@ -182,14 +191,14 @@ export default function OtpModal() {
                         <p className='text-center text-[12px] text-[#525252]'>Code in sent to {userNumber}</p>
                     </div>
                     <form>
-                        <div className='mb-3'>
+                        <div className='mb-3 flex items-center'>
                             {otp.map((digit, i) => (
                                 <input
                                     key={i}
                                     type="text"
                                     inputMode="numeric"
                                     maxLength={1}
-                                    className="w-12 h-12 m-1 text-center text-xl border border-gray-300 rounded-md shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 hover:shadow-md"
+                                    className="w-full h-full p-3 m-1 text-center text-xl border border-gray-300 rounded-md shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 hover:shadow-md"
                                     ref={(el: HTMLInputElement | null) => {
                                         inputRefs.current[i] = el;
                                     }}
@@ -212,6 +221,7 @@ export default function OtpModal() {
                         <Button
                             variant="contained"
                             onClick={() => mutation.mutate()}
+                            disabled={mutation.isPending}
                             sx={{
                                 width: "100%",
                                 backgroundColor: "#531fd9",
@@ -219,15 +229,10 @@ export default function OtpModal() {
                                 mt: 1
                             }}
                         >
-                            Verify
+                            {mutation.isPending ? (<CircularProgress size={20} sx={{ color: "#fff" }} />) : "Verify"}
                         </Button>
-
                     </form>
                 </DialogContent>
-                {/*  <DialogActions>
-                    <Button onClick={handleClose}>Disagree</Button>
-                    <Button onClick={() => mutation.mutate()}>Agree</Button>
-                </DialogActions> */}
             </Dialog>
         </React.Fragment>
     );

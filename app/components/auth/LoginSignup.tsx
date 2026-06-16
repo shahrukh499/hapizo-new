@@ -4,7 +4,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import Slide from "@mui/material/Slide";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import { Checkbox, IconButton, InputAdornment, TextField, Tooltip } from "@mui/material";
+import { Checkbox, CircularProgress, IconButton, InputAdornment, TextField, Tooltip } from "@mui/material";
 import { handleGetNumber, handleOtpModal, handleSignUpLoginModal } from "./loginsignupSlice";
 import { API_CONFIG, getApiUrl } from "@/app/utils/apiConfig";
 import { useMutation } from "@tanstack/react-query";
@@ -88,6 +88,12 @@ const LoginSignup = () => {
                 slots={{
                     transition: Transition,
                 }}
+                sx={{
+                    "& .MuiDialog-paper": {
+                      margin:'5px',
+                      width:'100%'
+                    }
+                  }}
                 fullWidth
                 maxWidth="xs"
                 keepMounted
@@ -129,6 +135,7 @@ const LoginSignup = () => {
                         <Button
                             variant="contained"
                             onClick={() => mutation.mutate()}
+                            disabled={mutation.isPending}
                             sx={{
                                 width: "100%",
                                 backgroundColor: "#531fd9",
@@ -136,17 +143,13 @@ const LoginSignup = () => {
                                 mt:1
                             }}
                         >
-                            Continue
+                            {mutation.isPending ? (<CircularProgress size={20} sx={{ color: "#fff" }} />) : ("Continue")}
                         </Button>
                     </form>
                     <div className="mt-5">
                         <p className="text-[13px]">Having trouble logging in? <Link className="text-blue-700 font-medium" href='#'>Get Help</Link></p>
                     </div>
                 </DialogContent>
-                {/* <DialogActions>
-                    <Button onClick={() => dispatch(handleOtpModal(true))}>OTP</Button>
-                    <Button onClick={() => mutation.mutate()}>Agree</Button>
-                </DialogActions> */}
             </Dialog>
         </React.Fragment>
     );

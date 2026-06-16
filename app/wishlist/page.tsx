@@ -35,7 +35,7 @@ function Wishlist() {
   );
 
   const renderUnauthenticatedState = () => (
-    <section className="py-6 lg:py-12">
+    <section className="py-6 lg:py-12 h-[85vh]">
       <div className="container mx-auto px-2">
         <h2 className="text-[20px] lg:text-[25px] font-semibold mb-2 lg:mb-4">
           My Wishlist

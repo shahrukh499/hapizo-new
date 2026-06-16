@@ -48,33 +48,33 @@ export default function Home() {
   return (
     <section>
     <Banner />
-    <section className="py-6 lg:py-12">
+    <section className="py-3 md:py-12">
       <div className="container mx-auto px-2">
         <div className="flex flex-wrap justify-center gap-y-4 gap-x-4">
-          <div className="w-full md:w-[30%]">
-            <div className="flex gap-2 items-center lg:justify-center">
-              <Image loading="eager" className="w-[50px] lg:w-[100px]" src='/assets/img/delivery-truck.png' alt="Image 1" width={100} height={100} />
+          <div className="w-[30%]">
+            <div className="flex flex-wrap md:flex-nowrap gap-1 items-center justify-center">
+              <Image loading="eager" className="w-[50px] lg:w-[100px] " src='/assets/img/delivery-truck.png' alt="Image 1" width={100} height={100} />
               <div>
-                <p className="text-[18px] lg:text-2xl font-bold">Fast Delivery</p>
-                <p className="text-[12px] lg:text-[14px] text-gray-600">Fast delivery on all orders</p>
+                <p className="text-[14px] lg:text-2xl font-semibold md:font-bold text-center md:text-left">Fast Delivery</p>
+                <p className="text-[12px] lg:text-[14px] text-gray-600 hidden md:block">Fast delivery on all orders</p>
               </div>
             </div>
           </div>
-          <div className="w-full md:w-[30%]">
-            <div className="flex gap-2 items-center lg:justify-center">
-              <Image loading="eager" className="w-[50px] lg:w-[100px]" src='/assets/img/cash.png' alt="Image 2" width={100} height={100} />
+          <div className="w-[30%]">
+            <div className="flex flex-wrap md:flex-nowrap gap-1 items-center justify-center">
+              <Image loading="eager" className="w-[50px] lg:w-[100px] " src='/assets/img/cash.png' alt="Image 2" width={100} height={100} />
               <div>
-                <p className="text-[18px] lg:text-2xl font-bold">Secure Payment</p>
-                <p className="text-[12px] lg:text-[14px] text-gray-600">Flexible & Secure payment on all orders</p>
+                <p className="text-[14px] lg:text-2xl font-semibold md:font-bold text-center md:text-left">Secure Payment</p>
+                <p className="text-[12px] lg:text-[14px] text-gray-600 hidden md:block">Flexible & Secure payment on all orders</p>
               </div>
             </div>
           </div>
-          <div className="w-full md:w-[30%]">
-            <div className="flex gap-2 items-center lg:justify-center">
-              <Image loading="eager" className="w-[50px] lg:w-[100px]" src='/assets/img/online-chat.png' alt="Image 3" width={100} height={100} />
+          <div className="w-[30%]">
+            <div className="flex flex-wrap md:flex-nowrap gap-1 items-center justify-center">
+              <Image loading="eager" className="w-[50px] lg:w-[100px] " src='/assets/img/trust.png' alt="Image 3" width={100} height={100} />
               <div>
-                <p className="text-[18px] lg:text-2xl font-bold">24/7 Support</p>
-                <p className="text-[12px] lg:text-[14px] text-gray-600">24/7 Support on all orders</p>
+                <p className="text-[14px] lg:text-2xl font-semibold md:font-bold text-center md:text-left">100% Trusted</p>
+                <p className="text-[12px] lg:text-[14px] text-gray-600 hidden md:block">Shop with confidence, delivered with trust.</p>
               </div>
             </div>
           </div>
@@ -157,13 +157,13 @@ export default function Home() {
       </div>
     </section>
 
-    <section className="pt-6">
+    <section className="pt-3">
       <div className="container mx-auto px-2">
         <div className="flex flex-wrap gap-y-3">
-          <div className="w-full lg:w-[50%] md:px-1.5">
+          <div className="w-full md:w-[50%] md:pe-1.5">
             <Image src='/assets/img/800X400.webp' alt="800X400" width={800} height={400} />
           </div>
-          <div className="w-full lg:w-[50%] md:px-1.5">
+          <div className="w-full md:w-[50%] md:pl-1.5">
             <Image src='/assets/img/800X400.webp' alt="800X400" width={800} height={400} />
           </div>
         </div>
@@ -204,7 +204,7 @@ export default function Home() {
       </div>
     </section> */}
 
-    <section className="py-6">
+    <section className="py-3">
       <div className="container mx-auto px-2">
         <Image src='/assets/img/1900X400.webp' alt="" width={1900} height={400} />
       </div>

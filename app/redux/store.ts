@@ -5,6 +5,7 @@ import snackbarSlice from "@/app/components/snackbar/snackbarSlice"
 import addressSlice from "@/app/components/address/addressSlice";
 import loginsignupSlice from "@/app/components/auth/loginsignupSlice"
 import couponSlice from "@/app/cart/couponSlice"
+import searchSlice from "@/app/components/header/searchSlice"
 
 export const store = configureStore({
     reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
         addressSlice,
         loginsignupSlice,
         couponSlice,
+        searchSlice,
     }
 });
 
