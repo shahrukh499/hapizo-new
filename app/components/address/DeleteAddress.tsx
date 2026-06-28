@@ -37,7 +37,24 @@ function DeleteAddress({addrid} : {addrid : string}) {
         },
       });
   return (
-    <Button onClick={()=>mutation.mutate(addrid)} variant="outlined" sx={{ fontSize: '14px' }} startIcon={<DeleteIcon fontSize='small' />}>
+    <Button 
+      onClick={()=>mutation.mutate(addrid)} 
+      variant="contained" 
+      startIcon={<DeleteIcon 
+      fontSize='small' />}
+      sx={{
+        color: '#ffffff',
+        backgroundColor: '#313647',
+        border: '0',
+        display: 'flex',
+        alignItems: 'start',
+        gap: '5px',
+        padding: '5px 20px',
+        textTransform: 'capitalize',
+        marginTop: '5px',
+        fontSize: '14px'
+    }}
+      >
         Delete
     </Button>
   )

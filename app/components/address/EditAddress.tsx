@@ -10,7 +10,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleEditAddressModal } from "./addressSlice";
 import {
     Checkbox,
+    FormControl,
     FormControlLabel,
+    FormHelperText,
     Radio,
     RadioGroup,
     TextField,
@@ -24,13 +26,23 @@ import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
 interface addrbyidPropsType {
     name: string;
     phone: string;
-    zip: number;
+    zip: string;
     street: string;
     city: string;
     state: string;
     isDefault: boolean;
     addrType: string;
   }
+
+  type Errors = {
+    name?: string;
+    mobile?: string;
+    pin?: string;
+    street?: string;
+    city?: string;
+    state?: string;
+    addrType?: string;
+};
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -42,6 +54,7 @@ const Transition = React.forwardRef(function Transition(
   });
 
 export default function EditAddress({addressId, addrbyid} : {addressId:string | null, addrbyid: addrbyidPropsType}) {
+    const [errors, setErrors] = React.useState<Errors>({});
     const [form, setForm] = React.useState({
         name: addrbyid.name || "",
         mobile: addrbyid.phone || "",
@@ -61,6 +74,46 @@ export default function EditAddress({addressId, addrbyid} : {addressId:string | 
 
     const handleClose = () => {
         dispatch(handleEditAddressModal(false));
+    };
+
+    const validateFields = () => {
+        const newErrors: Errors = {};
+
+        if (!form.name.trim()) {
+            newErrors.name = "Name is required";
+        }
+
+        if (!form.mobile.trim()) {
+            newErrors.mobile = "Mobile number is required";
+        } else if (!/^[6-9]\d{9}$/.test(form.mobile)) {
+            newErrors.mobile = "Enter a valid mobile number";
+        }
+
+        if (!form.pin.trim()) {
+            newErrors.pin = "Pin code is required";
+        } else if (!/^\d{6}$/.test(form.pin)) {
+            newErrors.pin = "Enter a valid 6 digit pin code";
+        }
+
+        if (!form.street.trim()) {
+            newErrors.street = "Street is required";
+        }
+
+        if (!form.city.trim()) {
+            newErrors.city = "City is required";
+        }
+
+        if (!form.state.trim()) {
+            newErrors.state = "State is required";
+        }
+
+        if (!form.addrType) {
+            newErrors.addrType = "Please select address type";
+        }
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
     };
 
     React.useEffect(() => {
@@ -114,7 +167,13 @@ export default function EditAddress({addressId, addrbyid} : {addressId:string | 
         onError:(error)=>{
           dispatch(showSnackbar({message: error.message, variant: "error"}))
         }
-      })
+      });
+
+      const handleSubmit = () => {
+        if (validateFields()) {
+            mutation.mutate();
+        }
+    };
 
     return (
         <React.Fragment>
@@ -126,9 +185,17 @@ export default function EditAddress({addressId, addrbyid} : {addressId:string | 
                 }}
                 keepMounted
                 onClose={handleClose}
-                aria-describedby="alert-dialog-slide-description"
+                aria-describedby="edit-address-modal"
+                sx={{
+                    "& .MuiDialog-paper": {
+                        borderRadius: '2px',
+                        margin: '5px',
+                        width: '95%',
+                        px: "3px"
+                    }
+                }}
             >
-                <DialogTitle>{"Add New Address"}</DialogTitle>
+                <h2 className="text-[23px] lg:text-[25px] font-semibold text-center pt-5">Edit your <span className=" text-[#ff7520]">address</span></h2>
                 <DialogContent>
                     <form onSubmit={()=>mutation.mutate()}>
                         <div className="flex flex-wrap gap-y-4">
@@ -145,6 +212,8 @@ export default function EditAddress({addressId, addrbyid} : {addressId:string | 
                                     value={form.name}
                                     onChange={handleChange}
                                     fullWidth
+                                    error={!!errors.name}
+                                    helperText={errors.name}
                                 />
                             </div>
                             <div className="w-full">
@@ -157,6 +226,8 @@ export default function EditAddress({addressId, addrbyid} : {addressId:string | 
                                     value={form.mobile}
                                     onChange={handleChange}
                                     fullWidth
+                                    error={!!errors.mobile}
+                                    helperText={errors.mobile}
                                 />
                             </div>
                             <div className="w-full">
@@ -173,6 +244,8 @@ export default function EditAddress({addressId, addrbyid} : {addressId:string | 
                                     value={form.pin}
                                     onChange={handleChange}
                                     fullWidth
+                                    error={!!errors.pin}
+                                    helperText={errors.pin}
                                 />
                             </div>
                             <div className="w-full">
@@ -185,6 +258,8 @@ export default function EditAddress({addressId, addrbyid} : {addressId:string | 
                                     value={form.street}
                                     onChange={handleChange}
                                     fullWidth
+                                    error={!!errors.street}
+                                    helperText={errors.street}
                                 />
                             </div>
                             <div className="w-full">
@@ -197,6 +272,8 @@ export default function EditAddress({addressId, addrbyid} : {addressId:string | 
                                     value={form.city}
                                     onChange={handleChange}
                                     fullWidth
+                                    error={!!errors.city}
+                                    helperText={errors.city}
                                 />
                             </div>
                             <div className="w-full">
@@ -209,19 +286,27 @@ export default function EditAddress({addressId, addrbyid} : {addressId:string | 
                                     value={form.state}
                                     onChange={handleChange}
                                     fullWidth
+                                    error={!!errors.state}
+                                    helperText={errors.state}
                                 />
                             </div>
                             <div className="w-full">
-                                <RadioGroup
-                                    row
-                                    aria-labelledby="demo-radio-buttons-group-label"
-                                    name="addrType"
-                                    value={form.addrType}   // controlled by state
-                                    onChange={(e) => setForm({ ...form, addrType: e.target.value })}
-                                >
-                                    <FormControlLabel value="Home" control={<Radio />} label="Home" />
-                                    <FormControlLabel value="Office" control={<Radio />} label="Office" />
-                                </RadioGroup>
+                            <FormControl error={!!errors.addrType}>
+                                    <RadioGroup
+                                        row
+                                        value={form.addrType}
+                                        onChange={(e) =>
+                                            setForm({ ...form, addrType: e.target.value })
+                                        }
+                                    >
+                                        <FormControlLabel value="Home" control={<Radio />} label="Home" />
+                                        <FormControlLabel value="Office" control={<Radio />} label="Office" />
+                                    </RadioGroup>
+
+                                    {errors.addrType && (
+                                        <FormHelperText>{errors.addrType}</FormHelperText>
+                                    )}
+                                </FormControl>
                             </div>
                             <div className="w-full">
                                 <FormControlLabel
@@ -241,8 +326,34 @@ export default function EditAddress({addressId, addrbyid} : {addressId:string | 
                     </form>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={()=>mutation.mutate()}>Save</Button>
+                    <Button 
+                        onClick={handleClose}
+                        sx={{
+                            color: '#ffffff',
+                            backgroundColor: '#313647',
+                            border: '0',
+                            display: 'flex',
+                            alignItems: 'start',
+                            gap: '5px',
+                            padding: '5px 20px',
+                            textTransform: 'capitalize',
+                            marginTop: '5px'
+                        }}
+                        >Cancel</Button>
+                    <Button 
+                        onClick={()=>mutation.mutate()}
+                        sx={{
+                            color: '#ffffff',
+                            backgroundColor: '#313647',
+                            border: '0',
+                            display: 'flex',
+                            alignItems: 'start',
+                            gap: '5px',
+                            padding: '5px 20px',
+                            textTransform: 'capitalize',
+                            marginTop: '5px'
+                        }}
+                        >Save</Button>
                 </DialogActions>
             </Dialog>
         </React.Fragment>

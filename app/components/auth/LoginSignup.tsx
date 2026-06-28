@@ -16,15 +16,17 @@ import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
-      children: React.ReactElement<any, any>;
+        children: React.ReactElement<any, any>;
     },
     ref: React.Ref<unknown>,
-  ) {
+) {
     return <Slide direction="up" ref={ref} {...props} />;
-  });
+});
 
 const LoginSignup = () => {
     const [phone, setPhone] = React.useState('');
+    const [error, setError] = React.useState('');
+    const [checked, setChecked] = React.useState(false);
     const { isSignUpLoginModal } = useAppSelector((state) => state.loginsignupSlice)
     const dispatch = useAppDispatch();
 
@@ -34,6 +36,26 @@ const LoginSignup = () => {
 
     const handleClose = () => {
         dispatch(handleSignUpLoginModal(false));
+    };
+
+    const validateForm = () => {
+        if (!phone) {
+            setError("Phone number is required");
+            return false;
+        }
+
+        if (!/^[0-9]{10}$/.test(phone)) {
+            setError("Enter valid 10 digit phone number");
+            return false;
+        }
+
+        if (!checked) {
+            setError("Please accept terms & conditions");
+            return false;
+        }
+
+        setError('');
+        return true;
     };
 
     const handleFormSubmit = async () => {
@@ -72,6 +94,14 @@ const LoginSignup = () => {
         }
     })
 
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+
+        if (!validateForm()) return;
+
+        mutation.mutate();
+    };
+
     return (
         <React.Fragment>
             <Tooltip title="Login">
@@ -90,57 +120,74 @@ const LoginSignup = () => {
                 }}
                 sx={{
                     "& .MuiDialog-paper": {
-                      margin:'5px',
-                      width:'100%'
+                        margin: '5px',
+                        width: '100%'
                     }
-                  }}
+                }}
                 fullWidth
                 maxWidth="xs"
                 keepMounted
                 onClose={handleClose}
                 aria-describedby="alert-dialog-slide-description"
             >
-                <DialogContent sx={{height:'500px'}}>
+                <DialogContent sx={{ height: '500px' }}>
                     <div className="pt-8 pb-2">
                         <Image
                             className="block mx-auto"
-                            src="/assets/img/logo.svg"
+                            src="/assets/img/hapizo-logo.jpg"
                             alt=""
-                            width={100}
-                            height={100}
+                            width={180}
+                            height={180}
                         />
                     </div>
                     <div className="mb-10">
                         <h4 className="text-center text-[20px] font-medium">Login or Signup</h4>
                     </div>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <TextField
                             fullWidth
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            id="standard-basic"
+                            onChange={(e) => {
+                                const digitsOnly = e.target.value.replace(/\D/g, '');
+                                setPhone(digitsOnly);
+                                setError('');
+                            }}
                             label="Phone No."
                             variant="outlined"
                             size="small"
+                            error={!!error}
+                            helperText={error}
+                            required  
                             slotProps={{
                                 input: {
-                                  startAdornment: <InputAdornment position="start">+91</InputAdornment>,
+                                    startAdornment: <InputAdornment position="start">+91</InputAdornment>,
                                 },
-                              }}
+                                htmlInput: {
+                                    maxLength: 10,
+                                    inputMode: 'numeric',
+                                    pattern: '[1-9]{1}[0-9]{9}',
+                                    title:"Please enter a valid 10-digit phone number."
+                                },
+                            }}
                         />
                         <div className="flex items-center gap-x-1 py-3">
-                            <Checkbox size="small" />
-                            <p className="text-[12px]">By continue, I agree to the <Link className="text-blue-700 font-medium" href='#'>Term of use</Link> & <Link className="text-blue-700 font-medium" href='#'>Privacy Policy</Link> and i am above 18 years old.</p>
+                            <Checkbox
+                                size="small"
+                                checked={checked}
+                                required
+                                onChange={(e) => setChecked(e.target.checked)}
+                            />
+                            <p className="text-[12px]">By continue, I agree to the <Link className="text-blue-700 font-medium" href='#'>Term of use</Link> & <Link className="text-blue-700 font-medium" href='/privacy-policy' onClick={handleClose}>Privacy Policy</Link> and i am above 18 years old.</p>
                         </div>
                         <Button
+                            type="submit"
                             variant="contained"
-                            onClick={() => mutation.mutate()}
                             disabled={mutation.isPending}
                             sx={{
                                 width: "100%",
                                 backgroundColor: "#531fd9",
-                                textTransform:"capitalize",
-                                mt:1
+                                textTransform: "capitalize",
+                                mt: 1
                             }}
                         >
                             {mutation.isPending ? (<CircularProgress size={20} sx={{ color: "#fff" }} />) : ("Continue")}

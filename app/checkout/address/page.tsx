@@ -27,12 +27,12 @@ function Address() {
     const today = new Date();
     const deliveryDate = new Date(today);
     deliveryDate.setDate(today.getDate() + 7);
-    
+
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const day = deliveryDate.getDate();
     const month = months[deliveryDate.getMonth()];
     const year = deliveryDate.getFullYear();
-    
+
     return `${day} ${month} ${year}`;
   };
 
@@ -64,15 +64,15 @@ function Address() {
     refetchOnWindowFocus: false,
   });
 
-  const handleProductsById = (id : string) => {
-    const addr = addresses.addresses.find((addrId:any) => addrId._id === id)
+  const handleProductsById = (id: string) => {
+    const addr = addresses.addresses.find((addrId: any) => addrId._id === id)
     setAddressById(addr)
   }
 
 
   useEffect(() => {
     if (addresses?.addresses?.length > 0) {
-      const defaultAddr = addresses.addresses.find((addr:any) => addr.isDefault);
+      const defaultAddr = addresses.addresses.find((addr: any) => addr.isDefault);
       setSelectedValue(defaultAddr ? defaultAddr._id : addresses.addresses[0]._id);
       const selectedId = defaultAddr ? defaultAddr._id : addresses.addresses[0]._id;
       setSelectedValue(selectedId);
@@ -81,12 +81,12 @@ function Address() {
   }, [addresses, dispatch]);
 
 
- /*  useEffect(() => {
-    if (addresses?.addresses?.length > 0) {
-      const defaultAddr = addresses.addresses.find(addr => addr.isDefault);
-
-    }
-  }, [addresses, dispatch]); */
+  /*  useEffect(() => {
+     if (addresses?.addresses?.length > 0) {
+       const defaultAddr = addresses.addresses.find(addr => addr.isDefault);
+ 
+     }
+   }, [addresses, dispatch]); */
 
   const handleChangeRedioValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedId = e.target.value;
@@ -124,7 +124,7 @@ function Address() {
                     <Skeleton variant="rectangular" animation="wave" width={`100%`} height={200} />
                   ) : (
                     addresses?.addresses.length > 0 ? (
-                      addresses?.addresses.map((el:any, i:number) => (
+                      addresses?.addresses.map((el: any, i: number) => (
                         <div key={i} className='border border-[#e4e4e4] shadow p-3 rounded mb-3'>
                           <div className='flex items-start'>
                             <div className='w-[60px]'>
@@ -158,7 +158,23 @@ function Address() {
                                     <DeleteAddress
                                       addrid={el._id}
                                     />
-                                    <Button onClick={() => handleEditModalAndAddrId(el._id)} variant="outlined" sx={{ fontSize: '14px' }} startIcon={<DriveFileRenameOutlineOutlinedIcon fontSize='small' />}>
+                                    <Button 
+                                      onClick={() => handleEditModalAndAddrId(el._id)} 
+                                      variant="outlined" 
+                                      startIcon={<DriveFileRenameOutlineOutlinedIcon fontSize='small' />}
+                                      sx={{
+                                        fontSize: '14px',
+                                        color: '#ffffff',
+                                        backgroundColor: '#313647',
+                                        border: '0',
+                                        display: 'flex',
+                                        alignItems: 'start',
+                                        gap: '5px',
+                                        padding: '5px 20px',
+                                        textTransform: 'capitalize',
+                                        marginTop: '5px'
+                                    }}
+                                      >
                                       Edit
                                     </Button>
                                   </div>
@@ -187,6 +203,8 @@ function Address() {
                 <PaymentDetails />
                 <div className="w-full">
                   <Button
+                    variant='contained'
+                    disabled={!selectedValue}
                     onClick={() => router.push("/checkout/payment")}
                     sx={{
                       py: "10px",

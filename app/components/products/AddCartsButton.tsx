@@ -30,9 +30,8 @@ function AddCartsButton({ productId, stock, productSize, productColor, btnStyle 
   // Check if already in cart
   const existingItem = cart?.cart?.items?.some(
     (item : any) =>
-      item?.products?._id === productId && item?.productSize === productSize && item?.productColor === productColor
+      item?.productId === productId && item?.productSize === productSize && item?.productColor === productColor
   );
-  
 
   const handleCartButton = () => {
     if (!user) {

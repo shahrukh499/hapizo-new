@@ -11,7 +11,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleAddressModal } from "./addressSlice";
 import {
     Checkbox,
+    FormControl,
     FormControlLabel,
+    FormHelperText,
     Radio,
     RadioGroup,
     TextField,
@@ -24,15 +26,27 @@ import { TransitionProps } from "@mui/material/transitions";
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
-      children: React.ReactElement<any, any>;
+        children: React.ReactElement<any, any>;
     },
     ref: React.Ref<unknown>,
-  ) {
+) {
     return <Slide direction="up" ref={ref} {...props} />;
-  });
+});
+
+type Errors = {
+    name?: string;
+    mobile?: string;
+    pin?: string;
+    street?: string;
+    city?: string;
+    state?: string;
+    addrType?: string;
+};
+
 
 export default function AddAddress() {
     const [submiting, setSubmiting] = React.useState(false)
+    const [errors, setErrors] = React.useState<Errors>({});
     const [form, setForm] = React.useState({
         name: "",
         mobile: "",
@@ -44,7 +58,7 @@ export default function AddAddress() {
         addrType: "",
     })
     const queryClient = useQueryClient();
-    const handleChange = (e:any) => {
+    const handleChange = (e: any) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
     const { isAddressModalOpen } = useAppSelector((state) => state.addressSlice);
@@ -54,9 +68,49 @@ export default function AddAddress() {
         dispatch(handleAddressModal(false));
     };
 
+    const validateFields = () => {
+        const newErrors: Errors = {};
+
+        if (!form.name.trim()) {
+            newErrors.name = "Name is required";
+        }
+
+        if (!form.mobile.trim()) {
+            newErrors.mobile = "Mobile number is required";
+        } else if (!/^[6-9]\d{9}$/.test(form.mobile)) {
+            newErrors.mobile = "Enter a valid mobile number";
+        }
+
+        if (!form.pin.trim()) {
+            newErrors.pin = "Pin code is required";
+        } else if (!/^\d{6}$/.test(form.pin)) {
+            newErrors.pin = "Enter a valid 6 digit pin code";
+        }
+
+        if (!form.street.trim()) {
+            newErrors.street = "Street is required";
+        }
+
+        if (!form.city.trim()) {
+            newErrors.city = "City is required";
+        }
+
+        if (!form.state.trim()) {
+            newErrors.state = "State is required";
+        }
+
+        if (!form.addrType) {
+            newErrors.addrType = "Please select address type";
+        }
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleAddAddress = async () => {
         setSubmiting(true)
-        try{
+        try {
             const payload = {
                 name: form.name,
                 phone: form.mobile,
@@ -72,17 +126,17 @@ export default function AddAddress() {
                 API_CONFIG.HTTP_METHODS.POST,
                 payload as any
             );
-    
+
             const response = await fetch(apiUri, requestOptions);
             const data = await response.json();
-    
+
             if (!response.ok) {
                 throw new Error(data.message || "Failed to fetch products");
             }
             return data;
-        }catch(error:any){
+        } catch (error: any) {
             console.error(error.message || "somthing wrong")
-        }finally{
+        } finally {
             setSubmiting(false)
         }
 
@@ -110,6 +164,12 @@ export default function AddAddress() {
         }
     })
 
+    const handleSubmit = () => {
+        if (validateFields()) {
+            mutation.mutate();
+        }
+    };
+
     return (
         <React.Fragment>
             <Dialog
@@ -121,8 +181,16 @@ export default function AddAddress() {
                 keepMounted
                 onClose={handleClose}
                 aria-describedby="alert-dialog-slide-description"
+                sx={{
+                    "& .MuiDialog-paper": {
+                        borderRadius: '2px',
+                        margin: '5px',
+                        width: '95%',
+                        px: "3px"
+                    }
+                }}
             >
-                <DialogTitle>{"Add New Address"}</DialogTitle>
+                <h2 className="text-[23px] lg:text-[25px] font-semibold text-center pt-5">Add new <span className=" text-[#ff7520]">address</span></h2>
                 <DialogContent>
                     <form onSubmit={() => mutation.mutate()}>
                         <div className="flex flex-wrap gap-y-4">
@@ -139,6 +207,8 @@ export default function AddAddress() {
                                     value={form.name}
                                     onChange={handleChange}
                                     fullWidth
+                                    error={!!errors.name}
+                                    helperText={errors.name}
                                 />
                             </div>
                             <div className="w-full">
@@ -151,6 +221,8 @@ export default function AddAddress() {
                                     value={form.mobile}
                                     onChange={handleChange}
                                     fullWidth
+                                    error={!!errors.mobile}
+                                    helperText={errors.mobile}
                                 />
                             </div>
                             <div className="w-full">
@@ -167,6 +239,8 @@ export default function AddAddress() {
                                     value={form.pin}
                                     onChange={handleChange}
                                     fullWidth
+                                    error={!!errors.pin}
+                                    helperText={errors.pin}
                                 />
                             </div>
                             <div className="w-full">
@@ -179,6 +253,8 @@ export default function AddAddress() {
                                     value={form.street}
                                     onChange={handleChange}
                                     fullWidth
+                                    error={!!errors.street}
+                                    helperText={errors.street}
                                 />
                             </div>
                             <div className="w-full">
@@ -191,6 +267,8 @@ export default function AddAddress() {
                                     value={form.city}
                                     onChange={handleChange}
                                     fullWidth
+                                    error={!!errors.city}
+                                    helperText={errors.city}
                                 />
                             </div>
                             <div className="w-full">
@@ -203,19 +281,27 @@ export default function AddAddress() {
                                     value={form.state}
                                     onChange={handleChange}
                                     fullWidth
+                                    error={!!errors.state}
+                                    helperText={errors.state}
                                 />
                             </div>
                             <div className="w-full">
-                                <RadioGroup
-                                    row
-                                    aria-labelledby="demo-radio-buttons-group-label"
-                                    name="addrType"
-                                    value={form.addrType}   // controlled by state
-                                    onChange={(e) => setForm({ ...form, addrType: e.target.value })}
-                                >
-                                    <FormControlLabel value="Home" control={<Radio />} label="Home" />
-                                    <FormControlLabel value="Office" control={<Radio />} label="Office" />
-                                </RadioGroup>
+                                <FormControl error={!!errors.addrType}>
+                                    <RadioGroup
+                                        row
+                                        value={form.addrType}
+                                        onChange={(e) =>
+                                            setForm({ ...form, addrType: e.target.value })
+                                        }
+                                    >
+                                        <FormControlLabel value="Home" control={<Radio />} label="Home" />
+                                        <FormControlLabel value="Office" control={<Radio />} label="Office" />
+                                    </RadioGroup>
+
+                                    {errors.addrType && (
+                                        <FormHelperText>{errors.addrType}</FormHelperText>
+                                    )}
+                                </FormControl>
                             </div>
                             <div className="w-full">
                                 <FormControlLabel
@@ -235,8 +321,35 @@ export default function AddAddress() {
                     </form>
                 </DialogContent>
                 <DialogActions>
-                    <Button  onClick={handleClose}>Cancel</Button>
-                    <Button disabled={submiting} onClick={() => mutation.mutate()}>
+                    <Button onClick={handleClose}
+                        sx={{
+                            color: '#ffffff',
+                            backgroundColor: '#313647',
+                            border: '0',
+                            display: 'flex',
+                            alignItems: 'start',
+                            gap: '5px',
+                            padding: '5px 20px',
+                            textTransform: 'capitalize',
+                            marginTop: '5px'
+                        }}
+                    >Cancel</Button>
+                    <Button
+                        disabled={submiting}
+                        onClick={handleSubmit}
+                        variant="contained"
+                        sx={{
+                            color: '#ffffff',
+                            backgroundColor: '#313647',
+                            border: '0',
+                            display: 'flex',
+                            alignItems: 'start',
+                            gap: '5px',
+                            padding: '5px 20px',
+                            textTransform: 'capitalize',
+                            marginTop: '5px'
+                        }}
+                    >
                         {submiting ? 'Saving...' : 'Save'}
                     </Button>
                 </DialogActions>

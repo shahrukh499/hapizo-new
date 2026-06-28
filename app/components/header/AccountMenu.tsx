@@ -19,6 +19,7 @@ import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import { RootState } from "@/app/redux/store";
 import { useAppSelector } from "@/app/redux/hooks";
+import BusinessIcon from '@mui/icons-material/Business';
 
 function AccountMenu(props : any) {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -32,6 +33,8 @@ function AccountMenu(props : any) {
     setAnchorEl(null);
   };
 
+  console.log(user,'ss');
+  
   return (
     <React.Fragment>
       <Box>
@@ -66,6 +69,9 @@ function AccountMenu(props : any) {
         slotProps={{
           paper: {
             elevation: 0,
+            style:{
+              width: '20ch',
+            },
             sx: {
               overflow: "visible",
               filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
@@ -117,25 +123,19 @@ function AccountMenu(props : any) {
           </ListItemIcon>
           Orders
         </MenuItem>
+        <MenuItem onClick={() => route.push('/my/address')}>
+          <ListItemIcon>
+            <BusinessIcon /> 
+          </ListItemIcon>
+          Address
+        </MenuItem>
         <MenuItem onClick={() => route.push('/my/wishlist')}>
           <ListItemIcon>
             <FavoriteBorderIcon /> 
           </ListItemIcon>
           Wishlist
         </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          Add another account
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          Settings
-        </MenuItem>
+        <Divider/>
         <MenuItem onClick={props.logout}>
           <ListItemIcon>
             <Logout fontSize="small" />

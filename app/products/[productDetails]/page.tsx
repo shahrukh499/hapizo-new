@@ -152,6 +152,7 @@ function ProductDetails() {
     );
   }, [variants, color]);
   const selectedColorValue = getColorValue(activeVariant?.color) || color;
+  
 
   useEffect(() => {
     if (!activeVariant) {
