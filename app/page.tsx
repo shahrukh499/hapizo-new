@@ -12,42 +12,12 @@ import Showcase1 from "./home/Showcase1";
 import { Skeleton } from "@mui/material";
 
 export default function Home() {
-  const { data: products, isLoading, error } = useQuery({
-    queryKey: ["allProducts"],
-    queryFn: async () => {
-      const apiUri = getApiUrl(API_CONFIG.ENDPOINTS.ALLPRODUCTS);
-      const requestOptions = API_CONFIG.createRequestOptions(
-        API_CONFIG.HTTP_METHODS.GET
-      );
-
-      const response = await fetch(apiUri, requestOptions);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch products");
-      }
-
-      // ✅ Sort newest first by createdAt
-      type Product = {
-        createdAt: string; // or Date if already parsed
-      };
-      
-      const sortedProducts = data.products.sort(
-        (a: Product, b: Product) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-
-      return sortedProducts;
-    },
-    staleTime: 1000 * 60 * 60, // 1 hour
-    refetchOnWindowFocus: false,
-  });
-
-  const memoProducts = useMemo(() => products, [products]);
+  const [bannerLoaded, setBannerLoaded] = useState(false);
+  const [showcaseLoaded, setShowcaseLoaded] = useState(false);
 
   return (
     <section>
-    <Banner />
+    <Banner onLoaded={() => setBannerLoaded(true)} />
     <section className="py-3 md:py-12">
       <div className="container mx-auto px-2">
         <div className="flex flex-wrap justify-center gap-y-4 gap-x-4">
@@ -123,37 +93,17 @@ export default function Home() {
       </div>
     </section> */}
 
-    <Showcase1 />
+    <Showcase1 
+      enabled={bannerLoaded}
+      onLoaded={() => setShowcaseLoaded(true)}
+    />
 
     <section>
       <div className="container mx-auto px-2">
         <div className="py-3">
           <h2 className="text-center text-[20px] md:text-[30px] font-semibold">Latest Products</h2>
         </div>
-        {
-          isLoading ? (
-            <div className="flex flex-wrap gap-y-3">
-              {
-                [...Array(10)].map((_, i) => {
-                  return (
-                    <div key={i} className="w-[50%] md:w-[33%] lg:w-[20%] px-0.5">
-                      <div >
-                        <Skeleton variant="rectangular" width={'100%'} height={250} />
-                        <Skeleton variant="text" width={50} />
-                        <Skeleton variant="text" width={'100%'} />
-                        <Skeleton variant="text" width={100} />
-                      </div>
-                    </div>
-                  )
-                })
-              }
-            </div>
-          ) : (
-            <CategoryTab
-              products={memoProducts}
-            />
-          )
-        }
+            <CategoryTab enabled={showcaseLoaded} />
       </div>
     </section>
 

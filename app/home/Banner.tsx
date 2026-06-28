@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Splide, SplideSlide } from '@splidejs/react-splide'
@@ -6,9 +6,14 @@ import { API_CONFIG, getApiUrl } from '../utils/apiConfig';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@mui/material';
 
-const Banner = () => {
+type Props = {
+    onLoaded: () => void;
+  };
+  
 
-    const { data: banner, isLoading, error } = useQuery({
+const Banner = ({ onLoaded }: Props) => {
+
+    const { data: banner, isLoading, error, isSuccess } = useQuery({
         queryKey: ["Banner"],
         queryFn: async () => {
             const apiUri = getApiUrl(API_CONFIG.ENDPOINTS.BANNER);
@@ -28,6 +33,12 @@ const Banner = () => {
         staleTime: 1000 * 60 * 60, // 1 hour
         refetchOnWindowFocus: false,
     });
+
+    useEffect(() => {
+        if (isSuccess) {
+          onLoaded();
+        }
+      }, [isSuccess, onLoaded]);
 
     if (error) {
         return (

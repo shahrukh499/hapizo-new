@@ -1,12 +1,17 @@
-import React, {memo} from 'react'
+import React, {memo, useEffect} from 'react'
 import { API_CONFIG, getApiUrl } from '../utils/apiConfig';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Skeleton } from '@mui/material';
 
-function Showcase1() {
-    const { data: showcase1, isLoading, error } = useQuery({
+type Props = {
+    enabled: boolean;
+    onLoaded: () => void;
+  };
+
+function Showcase1({enabled, onLoaded} : Props) {
+    const { data: showcase1, isLoading, error, isSuccess } = useQuery({
         queryKey: ["showcase1"],
         queryFn: async () => {
             const apiUri = getApiUrl(API_CONFIG.ENDPOINTS.SHOWCASE1);
@@ -25,9 +30,18 @@ function Showcase1() {
         },
         staleTime: 1000 * 60 * 60, // 1 hour
         refetchOnWindowFocus: false,
+        enabled
     });
+    
+    useEffect(() => {
+        if (isSuccess) {
+          onLoaded();
+        }
+      }, [isSuccess, onLoaded]);
 
-    if (isLoading) {
+      const showSkeleton = !enabled || isLoading;
+
+    if (showSkeleton) {
         return (
             <section>
                 <div className="container mx-auto px-2">
