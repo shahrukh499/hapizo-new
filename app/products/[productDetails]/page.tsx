@@ -209,8 +209,8 @@ function ProductDetails() {
       <div className="max-w-full">
         <p className="text-[15px] mb-2 uppercase font-semibold">More Colors</p>
         <div className="flex gap-2">
-          {variants.map((variant: { _id?: string; color?: string | { name?: string; hex?: string; image?: string } | null | undefined }, idx: number) => (
-            <div key={variant._id || idx} className="flex flex-col items-center">
+          {variants.map((variant: { _id?: string; color?: string; stock?: number | { name?: string; hex?: string; image?: string } | null | undefined }, idx: number) => (
+            <div key={variant._id || idx} className={`flex flex-col items-center`}>
               <Tooltip title={getColorValue(variant?.color) || "Color"} placement="top-start">
                 <button
                   type="button"
@@ -227,6 +227,7 @@ function ProductDetails() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     boxShadow: color === getColorValue(variant?.color) ? '0 0 0 2px #313647' : 'none',
+                    filter: variant.stock === 0 ? "grayscale(1)" : "grayscale(0)"
                   }}
                   aria-label={getColorValue(variant?.color) || "Color"}
                 >

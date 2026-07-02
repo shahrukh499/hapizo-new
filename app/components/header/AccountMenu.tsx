@@ -33,7 +33,7 @@ function AccountMenu(props : any) {
     setAnchorEl(null);
   };
 
-  console.log(user,'ss');
+  //console.log(user,'ss');
   
   return (
     <React.Fragment>

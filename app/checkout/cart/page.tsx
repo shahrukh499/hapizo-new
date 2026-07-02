@@ -7,6 +7,8 @@ import CartCard from "@/app/cart/CartCard";
 import Subtotal from "@/app/cart/Subtotal";
 import { handleSignUpLoginModal } from "@/app/components/auth/loginsignupSlice";
 import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 function Cart() {
   const [isClient, setIsClient] = useState<boolean>(false);
@@ -19,7 +21,7 @@ function Cart() {
   const { data: cart, isLoading, isError } = useCartItems(user);
 
   //console.log(cart,'cart');
-  
+
 
   useEffect(() => {
     setIsClient(true);
@@ -44,9 +46,17 @@ function Cart() {
   const renderUnauthenticatedState = () => (
     <section className="py-6 lg:py-12">
       <div className="container mx-auto px-2">
-        <h2 className="text-[20px] lg:text-[25px] font-semibold mb-2 lg:mb-4">
-          Shopping Cart
-        </h2>
+        <div className="flex items-center gap-x-3">
+          <div className="bg-purple-100 text-purple-700 p-2 rounded-lg">
+            <ShoppingCartOutlinedIcon fontSize="large" />
+          </div>
+          <div>
+            <h2 className="text-[25px] lg:text-[27px] font-semibold">
+              Shopping Cart
+            </h2>
+            <p className="text-gray-500">Review your items and proceed to checkout</p>
+          </div>
+        </div>
         <div className="h-[44vh] flex justify-center flex-col text-center">
           <Image
             className="mx-auto mb-5"
@@ -91,7 +101,7 @@ function Cart() {
 
   const renderCartItems = () => (
     <div className="flex flex-wrap">
-      <div className="w-full lg:w-[70%] lg:h-[545px] overflow-x-hidden overflow-y-auto lg:border-t lg:border-r border-gray-200 lg:px-2">
+      <div className="w-full lg:w-[70%] lg:h-[545px] overflow-x-hidden overflow-y-auto">
         {/*  <div className="my-3 p-3 rounded shadow border border-[#f0f0f0] bg-[#f8dfff9e]">
           <div className="flex flex-wrap">
               <div className="w-full lg:w-[70%]">
@@ -103,10 +113,10 @@ function Cart() {
               </div>
           </div>
         </div> */}
-        {cart?.cart?.items?.map((item:any, i:number) => (
+        {cart?.cart?.items?.map((item: any, i: number) => (
           <div
             key={`${item?._id}-${i}`}
-            className="border-1 border-gray-200 p-[8px] my-[10px] rounded"
+            className="border-2 border-gray-200 p-2 lg:p-4 my-[10px] rounded-2xl"
           >
             <CartCard
               id={item?._id}
@@ -122,11 +132,16 @@ function Cart() {
           </div>
         ))}
       </div>
-      <div className="w-full lg:w-[30%] lg:ps-3 border-t border-gray-200">
-        <div className="lg:px-2 py-3 h-full">
-          <h2 className="text-[20px] lg:text-[20px] font-semibold mb-3">
-            Payment Summary
-          </h2>
+      <div className="w-full lg:w-[30%] lg:ps-4">
+        <div className="px-3 py-5 lg:mt-3 h-full border-2 border-gray-200 rounded-2xl">
+          <div className="flex items-center gap-x-2 border-b-2 border-dashed border-gray-200 pb-3">
+            <div className="text-purple-700 bg-purple-100 p-2 rounded-lg">
+              <DescriptionIcon/>
+            </div>
+            <h2 className="text-[23px] font-semibold">
+              Order Summary
+            </h2>
+          </div>
           <Subtotal />
         </div>
       </div>
@@ -150,9 +165,17 @@ function Cart() {
     return (
       <section className="py-6 lg:py-12">
         <div className="container mx-auto px-2 md:px-12">
-          <h2 className="text-[20px] lg:text-[25px] font-semibold mb-2 lg:mb-4">
-            Shopping Cart
-          </h2>
+          <div className="flex items-center gap-x-3">
+            <div className="bg-purple-100 text-purple-700 p-2 rounded-lg">
+              <ShoppingCartOutlinedIcon fontSize="large" />
+            </div>
+            <div>
+              <h2 className="text-[25px] lg:text-[27px] font-semibold">
+                Shopping Cart
+              </h2>
+              <p className="text-gray-500">Review your items and proceed to checkout</p>
+            </div>
+          </div>
           {renderLoadingState()}
         </div>
       </section>
@@ -166,10 +189,18 @@ function Cart() {
   // ---------- Main render ----------
   return (
     <section className="py-6 lg:py-12">
-      <div className="container mx-auto px-2 md:px-12">
-        <h2 className="text-[20px] lg:text-[22px] font-semibold mb-2 lg:mb-4">
-          Shopping Cart
-        </h2>
+      <div className="container mx-auto px-2">
+        <div className="flex items-center gap-x-3">
+          <div className="bg-purple-100 text-purple-700 p-2 rounded-lg">
+            <ShoppingCartOutlinedIcon fontSize="large" />
+          </div>
+          <div>
+            <h2 className="text-[25px] lg:text-[27px] font-semibold">
+              Shopping Cart
+            </h2>
+            <p className="text-gray-500">Review your items and proceed to checkout</p>
+          </div>
+        </div>
 
         {/* {renderBackdropLoader()} */}
 

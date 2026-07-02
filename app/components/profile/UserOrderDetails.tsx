@@ -7,6 +7,7 @@ import Review from './Revew';
 import UpdateReview from './UpdateReview';
 import { useAppDispatch } from '@/app/redux/hooks';
 import { showSnackbar } from '../snackbar/snackbarSlice';
+import SideNavbarMobile from './SideNavbarMobile';
 
 export default function UserOrderDetails() {
     const [selectedItems, setSelectedItems] = useState<{ [orderId: string]: string[] }>({});
@@ -74,8 +75,11 @@ export default function UserOrderDetails() {
 
     return (
         <div>
-            <div className="mb-5">
+            <div className="mb-5 flex justify-between items-center">
                 <h1 className="text-[25px] font-semibold">All Orders</h1>
+                <div className="lg:hidden">
+                    <SideNavbarMobile />
+                </div>
             </div>
             <div>
                 {

@@ -7,6 +7,8 @@ import { showSnackbar } from "../components/snackbar/snackbarSlice";
 import { useCartItems } from "./useCartItems"; */
 import { useRouter } from "next/navigation";
 import PaymentDetails from "../components/checkoutDetails/CheckoutDetails";
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import GppGoodOutlinedIcon from '@mui/icons-material/GppGoodOutlined';
 /* import Coupons from "./Coupons";
  */
 function Subtotal() {
@@ -79,16 +81,24 @@ function Subtotal() {
       <div className="lg:absolute bottom-11 w-full">
         <Button
           onClick={() => routes.push("/checkout/address")}
+          startIcon={<LockOutlinedIcon />}
           sx={{
-            py: "10px",
             width: "100%",
             backgroundColor: "#313647",
             color: "#FFF",
             textTransform: "capitalize",
+            py: 2,
+            borderRadius: '13px'
           }}
         >
           Place Order
         </Button>
+        <div className="pt-2 flex items-center justify-center gap-x-1">
+          <div className="text-green-600">
+            <GppGoodOutlinedIcon/>
+          </div>
+          <p className="text-gray-500 font-medium text-[13px] mt-1">Safe and secure checkout</p>
+        </div>
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ import DeleteAddress from '../address/DeleteAddress';
 import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
 import EditAddress from '../address/EditAddress';
 import { useAppDispatch } from '@/app/redux/hooks';
+import SideNavbarMobile from './SideNavbarMobile';
 
 function UserAddressDetails() {
     const [addressId, setAddressId] = useState<string | null>(null);
@@ -63,8 +64,11 @@ function UserAddressDetails() {
 
     return (
         <div>
-            <div className="mb-5">
+            <div className="mb-5 flex justify-between items-center">
                 <h1 className="text-[25px] font-semibold">My Address</h1>
+                <div className="lg:hidden">
+                    <SideNavbarMobile />
+                </div>
             </div>
             <div className='border border-dashed border-[#e4e4e4]'>
                 <Button onClick={() => dispatch(handleAddressModal(true))} variant="text" sx={{ fontSize: '13px', width: '100%', minHeight: '60px' }} startIcon={<AddIcon fontSize='small' />}>Add New Address</Button>

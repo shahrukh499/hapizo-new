@@ -99,9 +99,9 @@ export default function Header() {
     <AppBar
       position="sticky"
       sx={{
-        backgroundColor: "#FDFAF6",
+        backgroundColor: "#FFFFFF",
         color: "black",
-        boxShadow: "none",
+        boxShadow: "0px 0px 4px #dedede",
         display: shouldHide ? "none" : "",
       }}
     >

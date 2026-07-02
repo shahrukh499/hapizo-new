@@ -6,6 +6,7 @@ import { API_CONFIG, getApiUrl } from "../utils/apiConfig";
 import { useCartItems } from "./useCartItems";
 import { applyCoupon, removeCoupon } from "./couponSlice";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import Image from "next/image";
 
 function Coupons() {
     const [code, setCode] = useState("");
@@ -101,22 +102,27 @@ function Coupons() {
                     </button>
                 </div>
             ) : (
-                <div className="flex gap-2 w-full">
-                    <input
-                        type="text"
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                        className="border rounded px-3 py-2 w-full uppercase"
-                        placeholder="Enter Coupon Code"
-                        disabled={mutation.isPending}
-                    />
-                    <button
-                        onClick={() => mutation.mutate()}
-                        disabled={mutation.isPending || !code.trim()}
-                        className="px-4 py-2 bg-black text-white rounded disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    >
-                        {mutation.isPending ? "Applying..." : "Apply"}
-                    </button>
+                <div className="flex items-center w-full">
+                    <div className="bg-purple-100 py-0 px-2 rounded border border-dashed border-purple-700">
+                        <Image src='/assets/img/coupon.png' alt="" width={50} height={50} />
+                    </div>
+                    <div className="relative w-full">
+                        <input
+                            type="text"
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
+                            className="border rounded px-3 py-2.5 w-full uppercase"
+                            placeholder="Enter Coupon Code"
+                            disabled={mutation.isPending}
+                        />
+                        <button
+                            onClick={() => mutation.mutate()}
+                            disabled={mutation.isPending || !code.trim()}
+                            className="px-6 py-2 bg-black text-white rounded disabled:bg-gray-400 disabled:cursor-not-allowed absolute right-[3px] top-1/2 -translate-y-1/2"
+                        >
+                            {mutation.isPending ? "Applying..." : "Apply"}
+                        </button>
+                    </div>
                 </div>
             )}
         </div>

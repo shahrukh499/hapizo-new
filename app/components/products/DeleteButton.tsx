@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { API_CONFIG, getApiUrl } from "@/app/utils/apiConfig";
 import { useDispatch } from "react-redux";
 import { showSnackbar } from "../snackbar/snackbarSlice"; // if you still want snackbar from Redux
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 
 type DeleteButtonProps = {
   id: string;
@@ -65,10 +66,10 @@ function DeleteButton({ id }: DeleteButtonProps) {
   return (
     <IconButton
       onClick={() => mutation.mutate(id)}
-      sx={{ p: "3px", display: "flex", justifyContent: "end" }}
+      sx={{ p: "3px", display: "flex", justifyContent: "end", backgroundColor:'#f3e8ff', color:'#8200db' }}
       disabled={mutation.isPending}
     >
-      <CloseIcon fontSize="small" />
+      <DeleteOutlineOutlinedIcon fontSize="small" />
     </IconButton>
   );
 }

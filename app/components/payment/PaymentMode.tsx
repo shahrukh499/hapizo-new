@@ -1,11 +1,5 @@
 'use client'
 import * as React from 'react';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useDispatch, useSelector } from 'react-redux';
 import { API_CONFIG, getApiUrl } from '@/app/utils/apiConfig';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCartItems } from '@/app/cart/useCartItems';
@@ -14,6 +8,9 @@ import { showSnackbar } from '../snackbar/snackbarSlice';
 import { removeCoupon } from '@/app/cart/couponSlice';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/app/redux/hooks';
+import Image from 'next/image';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import CreditCardOutlinedIcon from '@mui/icons-material/CreditCardOutlined';
 
 
 type Product = {
@@ -54,7 +51,6 @@ const loadRazorpay = () => {
 };
 
 export default function PaymentMode() {
-    const [expanded, setExpanded] = React.useState<string | false>('panel1');
     const [selectedValue, setSelectedValue] = React.useState('');
     const { data: cart } = useCartItems()
     const { selectedAddressId } = useAppSelector((state) => state.addressSlice);
@@ -66,17 +62,10 @@ export default function PaymentMode() {
     const handleChangeRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedValue(event.target.value);
     };
-    const baseurl = process.env.NEXT_PUBLIC_API_BASE_URL
+    //const baseurl = process.env.NEXT_PUBLIC_API_BASE_URL
 
     //console.log(selectedValue,'selectedValue');
 
-
-
-    const handleChange =
-        (panel: string) =>
-            (event: React.SyntheticEvent, isExpanded: boolean) => {
-                setExpanded(isExpanded ? panel : false);
-            };
 
     const cartTotalPrice = Array.isArray(cart?.cart?.items)
         ? cart.cart.items.reduce((acc: number, item: CartItem) => {
@@ -269,106 +258,111 @@ export default function PaymentMode() {
 
     return (
         <div className='pt-4 mb-3'>
-            <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1bh-content"
-                    id="panel1bh-header"
-                >
-                    <Typography component="span" >
-                        Cash On Delivery (Cash/UPI)
-                    </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <div className='flex items-center'>
-                        <div>
-                            <Radio
-                                checked={selectedValue === 'COD'}
-                                onChange={handleChangeRadio}
-                                value="COD"
-                                name="radio-buttons"
-                                slotProps={{ input: { 'aria-label': 'COD' } }}
-                            />
-                        </div>
-                        <h3 className='font-bold'>COD (Cash/UPI)</h3>
+            <div className={`${selectedValue === 'COD' ? 'border-2 border-purple-400 bg-purple-50 rounded-2xl' : 'border-2 border-gray-200 rounded-2xl'} px-1 lg:px-5 py-5 lg:py-10`}>
+                <div className='flex items-center lg:gap-x-2'>
+                    <div>
+                        <Radio
+                            color="secondary"
+                            checked={selectedValue === 'COD'}
+                            onChange={handleChangeRadio}
+                            value="COD"
+                            name="radio-buttons"
+                            slotProps={{ input: { 'aria-label': 'COD' } }}
+                        />
                     </div>
-                    <p className='text-[13px] py-2'>For this option, there is a fees of 10rs. To avoid this fees you can online.</p>
-                    <Button
-                        onClick={() => {
-                            if (selectedValue === "COD") {
-                                mutation.mutate();
-                            } else if (selectedValue === "ONLINE") {
-                                handleOnlinePayment();
-                            }
-                        }}
-                        disabled={mutation.isPending}
-                        variant="contained"
-                        sx={{ backgroundColor: "#313647", minWidth: { xs: '100%', md: '300px' }, textTransform: "capitalize" }}
-                    >
-                        {mutation.isPending ? 'Placing Order...' : 'Place Order'}
-                    </Button>
-                </AccordionDetails>
-            </Accordion>
-            <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel2bh-content"
-                    id="panel2bh-header"
-                >
-                    <Typography component="span" >
-                        UPI (Pay via any App)
-                    </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <div className='flex items-center'>
-                        <div>
-                            <Radio
-                                checked={selectedValue === 'ONLINE'}
-                                onChange={handleChangeRadio}
-                                value="ONLINE"
-                                name="radio-buttons"
-                                slotProps={{ input: { 'aria-label': 'ONLINE' } }}
-                            />
+                    <div className='flex items-center gap-x-4'>
+                        <div className='bg-purple-100 p-3 rounded-lg'>
+                            <Image className='w-6 lg:w-12' src='/assets/img/tracking.png' alt='cod' width={60} height={60} />
                         </div>
-                        <Typography>
-                            Coming Soon
-                        </Typography>
+                        <div>
+                            <h3 className='font-bold text-[18px]'>Cash On Delivery (Cash/UPI)</h3>
+                            <div className='mb-2 bg-green-100 rounded-full inline-flex px-3 py-[2px] gap-x-1 items-center'>
+                                <CreditCardOutlinedIcon fontSize='small' sx={{ color: '#008236' }} />
+                                <span className='text-[13px] text-center text-green-700 mt-1'>Pay when you receive your order</span>
+                            </div>
+                            <p className='text-[15px] mb-2 w-full max-w-[250px] text-gray-500'>Pay in cash or UPI to the deliver partner at the time of deleivry</p>
+                            <div className='flex items-center gap-x-3'>
+                                <div className='flex items-center justify-center gap-x-1 shadow bg-white px-3 rounded-full'>
+                                    <Image src='/assets/img/cash1.png' alt='cash' width={25} height={25} />
+                                    <span className='font-medium mt-1'>Cash</span>
+                                </div>
+                                <div className='flex items-center justify-center gap-x-1 shadow bg-white px-3 rounded-full'>
+                                    <Image src='/assets/img/bhim.png' alt='upi' width={25} height={25} />
+                                    <span className="font-medium mt-1">UPI</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </AccordionDetails>
-            </Accordion>
-            <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel3bh-content"
-                    id="panel3bh-header"
+                </div>
+            </div>
+            <div className={`${selectedValue === 'ONLINE' ? 'border-2 border-purple-400 bg-purple-50 rounded-2xl' : 'border-2 border-gray-200 rounded-2xl'} px-1 lg:px-5 py-5 lg:py-10 my-4`}>
+                <div className='flex items-center lg:gap-x-2'>
+                    <div>
+                        <Radio
+                            color="secondary"
+                            checked={selectedValue === 'ONLINE'}
+                            onChange={handleChangeRadio}
+                            value="ONLINE"
+                            name="radio-buttons"
+                            slotProps={{ input: { 'aria-label': 'ONLINE' } }}
+                        />
+                    </div>
+                    <div className='flex items-center gap-x-4'>
+                        <div className='bg-purple-100 p-3 rounded-lg'>
+                            <Image className='w-6 lg:w-12' src='/assets/img/purse.png' alt='cod' width={60} height={60} />
+                        </div>
+                        <div>
+                            <h3 className='font-bold text-[18px]'>UPI (Pay via any App)</h3>
+                            <div className='mb-2 bg-sky-100 rounded-full inline-flex px-3 py-[2px] gap-x-1 items-center'>
+                                <LockOutlinedIcon fontSize='small' sx={{ color: '#0069a8' }} />
+                                <span className='text-[13px] text-center text-sky-700 mt-1'>Secure & instant payment</span>
+                            </div>
+                            <p className='text-[15px] mb-2 w-full max-w-[250px] text-gray-500'>Pay securely usng any UPI app like Google Pay, PhonePe, Paytm, etc.</p>
+                            <div className='flex items-center gap-x-3'>
+                                <div className='flex items-center justify-center gap-x-1 shadow bg-white p-3 rounded-full'>
+                                    <Image src='/assets/img/google-pay.png' alt='cash' width={30} height={30} />
+                                    {/* <span className='font-medium'>Cash</span> */}
+                                </div>
+                                <div className='flex items-center justify-center gap-x-1 shadow bg-white p-3 rounded-full'>
+                                    <Image src='/assets/img/phone-pe.png' alt='upi' width={30} height={30} />
+                                    {/* <span className="font-medium">UPI</span> */}
+                                </div>
+                                <div className='flex items-center justify-center gap-x-1 shadow bg-white p-3 rounded-full'>
+                                    <Image src='/assets/img/paytm.png' alt='upi' width={30} height={30} />
+                                    {/* <span className="font-medium">UPI</span> */}
+                                </div>
+                                <div className='flex items-center justify-center gap-x-1 shadow bg-white p-3 rounded-full'>
+                                    <Image src='/assets/img/bhim.png' alt='upi' width={30} height={30} />
+                                    {/* <span className="font-medium">UPI</span> */}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <Button
+                    onClick={() => {
+                        if (selectedValue === "COD") {
+                            mutation.mutate();
+                        } else if (selectedValue === "ONLINE") {
+                            handleOnlinePayment();
+                        }
+                    }}
+                    disabled={mutation.isPending || !selectedValue}
+                    variant="contained"
+                    startIcon={<LockOutlinedIcon />}
+                    sx={{
+                        backgroundColor: "#313647",
+                        minWidth: { xs: '100%', md: '300px' },
+                        textTransform: "capitalize",
+                        py: 2,
+                        borderRadius: '13px'
+                    }}
                 >
-                    <Typography component="span" >
-                        Credit/Debit Card
-                    </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography>
-                        Coming Soon
-                    </Typography>
-                </AccordionDetails>
-            </Accordion>
-            <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel4bh-content"
-                    id="panel4bh-header"
-                >
-                    <Typography component="span" >
-                        Pay Later
-                    </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography>
-                        Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
-                        amet egestas eros, vitae egestas augue. Duis vel est augue.
-                    </Typography>
-                </AccordionDetails>
-            </Accordion>
+                    {mutation.isPending ? 'Placing Order...' : 'Place Order'}
+                </Button>
+            </div>
         </div>
     );
 }

@@ -26,11 +26,11 @@ function CartCard(props: CartCardProps) {
       <div>
       <Link href={`/products/${props.productId}`}>
         <Image
-          className="max-w-full w-[150px] h-auto lg:w-[150px] lg:h-[150px] object-cover rounded-[8px]"
+          className="h-[130px] lg:h-[180px] object-cover rounded-[8px]"
           src={props.img}
           alt=""
-          width={400}
-          height={400}
+          width={150}
+          height={150}
         />
       </Link>
       </div>
@@ -44,18 +44,18 @@ function CartCard(props: CartCardProps) {
               </Link>
               </h3>
             </div>
-            <p className="text-[12px] md:text-[15px]">{props.productColor} | Size : {props.productSize}</p>
-            <div className="flex gap-x-2">
+            <p className="text-[12px] md:text-[15px] lg:my-2">{props.productColor} | Size : {props.productSize}</p>
+            <div className="flex gap-x-2 mt-1">
               <p className="text-[15px] md:text-[15px] flex items-center">₹{props.price}</p>
               <p className="text-gray-400 text-[15px] line-through flex items-center">₹{Math.round(props.price * (props.discount / 100) + props.price)}</p>
-              <p className="text-[14px] text-[##313647]">{props.discount}% OFF</p>
+              <p className="text-[14px] text-[#ff741f]">{props.discount}% OFF</p>
             </div>
           </div>
           <div className="lg:mt-2">
-            <p className="lg:text-center font-semibold text-[12px] lg:text-[15px]">
+            <p className="lg:text-center font-semibold text-[12px] lg:text-[15px] mb-2">
               Quantity
             </p>
-            <div className="flex items-center">
+            <div className="inline-flex items-center border-2 border-gray-200 rounded-lg">
               <DecrementButton
                 productId={props.productId}
                 productSize={props.productSize}

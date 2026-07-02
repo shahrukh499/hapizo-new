@@ -2,6 +2,7 @@ import { API_CONFIG, getApiUrl } from "@/app/utils/apiConfig";
 import { Avatar, Button, Skeleton, TextField } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
+import SideNavbarMobile from "./SideNavbarMobile";
 
 function UserProfileDetails() {
   const handleUser = async () => {
@@ -29,7 +30,12 @@ function UserProfileDetails() {
   return (
     <div>
       <div className="mb-5">
-        <h1 className="text-[25px] font-semibold">User Profile</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-[25px] font-semibold">User Profile</h1>
+          <div className="lg:hidden">
+            <SideNavbarMobile/>
+          </div>
+        </div>
         <p className="text-[13px] text-[#525252]">
           Manage your details, view your tier status and change your password.
         </p>
@@ -92,13 +98,12 @@ function UserProfileDetails() {
                 }}
               /> */}
             </div>
-            <Button variant="contained">Update</Button>
           </div>
         </div>
         <div className="w-full px-2">
           <div className="shadow rounded-lg p-6">
             <h4 className="text-blue-700 font-semibold">Security</h4>
-            <div className="flex justify-around gap-x-5 my-5">
+            <div className="flex flex-wrap justify-around gap-x-5 gap-y-3 my-5">
               {
                 isLoading ? (
                   <Skeleton animation="wave" variant="rectangular" width={'100%'} height={50} />
@@ -124,27 +129,6 @@ function UserProfileDetails() {
                   <TextField
                     id="standard-basic"
                     fullWidth
-                    label="Password"
-                    type="password"
-                    autoComplete="current-password"
-                    value='shahrukh'
-                    variant="standard"
-                    slotProps={{
-                      input: {
-                        readOnly: true,
-                      },
-                    }}
-                  />
-                )
-              }
-
-              {
-                isLoading ? (
-                  <Skeleton animation="wave" variant="rectangular" width={'100%'} height={50} />
-                ) : (
-                  <TextField
-                    id="standard-basic"
-                    fullWidth
                     label="Phone Number"
                     value={user?.user.phone}
                     variant="standard"
@@ -156,10 +140,42 @@ function UserProfileDetails() {
                   />
                 )
               }
-            </div>
-            <div className="flex flex-wrap gap-x-3">
-              <Button variant="contained">Change Password</Button>
-              <Button variant="contained">Change Phone Number</Button>
+              {
+                isLoading ? (
+                  <Skeleton animation="wave" variant="rectangular" width={'100%'} height={50} />
+                ) : (
+                  <TextField
+                    id="standard-basic"
+                    fullWidth
+                    label="Gender"
+                    value={user?.user.gender}
+                    variant="standard"
+                    slotProps={{
+                      input: {
+                        readOnly: true,
+                      },
+                    }}
+                  />
+                )
+              }
+              {
+                isLoading ? (
+                  <Skeleton animation="wave" variant="rectangular" width={'100%'} height={50} />
+                ) : (
+                  <TextField
+                    id="standard-basic"
+                    fullWidth
+                    label="Age"
+                    value={user?.user.age}
+                    variant="standard"
+                    slotProps={{
+                      input: {
+                        readOnly: true,
+                      },
+                    }}
+                  />
+                )
+              }
             </div>
           </div>
         </div>

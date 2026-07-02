@@ -1,15 +1,10 @@
 "use client";
-import react, {useMemo} from 'react'
+import react from 'react'
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { API_CONFIG, getApiUrl } from "./utils/apiConfig";
-import AddCartsButton from "./components/products/AddCartsButton";
-import dynamic from 'next/dynamic';
+import { useState } from "react";
 import CategoryTab from "./home/CategoryTab";
-import { useQuery } from "@tanstack/react-query";
 import Banner from "./home/Banner";
 import Showcase1 from "./home/Showcase1";
-import { Skeleton } from "@mui/material";
 
 export default function Home() {
   const [bannerLoaded, setBannerLoaded] = useState(false);

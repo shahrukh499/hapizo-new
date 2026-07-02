@@ -12,6 +12,12 @@ import EditAddress from '@/app/components/address/EditAddress';
 import DeleteAddress from '@/app/components/address/DeleteAddress';
 import { useRouter } from 'next/navigation';
 import PaymentDetails from '@/app/components/checkoutDetails/CheckoutDetails';
+import FmdGoodIcon from '@mui/icons-material/FmdGood';
+import HomeIcon from '@mui/icons-material/Home';
+import BusinessIcon from '@mui/icons-material/Business';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 function Address() {
 
@@ -105,12 +111,23 @@ function Address() {
     <>
       <section className='py-6 lg:py-12'>
         <div className='container mx-auto px-2'>
-          <h1 className="text-[20px] lg:text-[22px] font-semibold mb-2 lg:mb-4">
-            Select Delivery Address
-          </h1>
+          <div className='flex items-center gap-x-3'>
+            <div className='bg-purple-100 text-purple-700 p-2 rounded-lg'>
+              <FmdGoodIcon fontSize='large' />
+            </div>
+            <div>
+              <h1 className="text-[25px] lg:text-[27px] font-semibold leading-tight">
+                Select Delivery Address
+              </h1>
+              <p className='text-gray-500'>Choose where you want your order to be delivered</p>
+            </div>
+          </div>
           <div className='flex flex-wrap'>
-            <div className='w-full lg:w-[70%] overflow-x-hidden lg:border-t lg:border-r border-gray-200 lg:px-2'>
-              <div className='py-3'>
+            <div className='w-full lg:w-[70%] overflow-x-hidden'>
+              <div className='py-4 flex items-center gap-x-2'>
+                <div className='bg-purple-50 text-purple-700 p-1 rounded-lg'>
+                  <BusinessIcon fontSize='small'/>
+                </div>
                 <h2 className='font-semibold text-[#525252] text-[15px]'>Your Addresses</h2>
               </div>
               <RadioGroup
@@ -125,14 +142,27 @@ function Address() {
                   ) : (
                     addresses?.addresses.length > 0 ? (
                       addresses?.addresses.map((el: any, i: number) => (
-                        <div key={i} className='border border-[#e4e4e4] shadow p-3 rounded mb-3'>
+                        <div key={i} className={`${selectedValue === el._id ? 'border-2 border-purple-500 bg-purple-50' : 'border-2 border-gray-200'} rounded-2xl mb-3 px-1 lg:px-5 py-10 relative`}>
                           <div className='flex items-start'>
+                            {
+                              el.isDefault && (
+                                <div className='absolute top-1 right-1'>
+                                  <div className='flex items-center gap-x-1 bg-purple-100 text-purple-700 px-2 py-1 rounded-full'>
+                                    <div>
+                                      <AutoAwesomeIcon fontSize='small'/>
+                                    </div> 
+                                    <span>Default Address</span>
+                                  </div>
+                                </div>
+                              )
+                            }
                             <div className='w-[60px]'>
                               {
                                 !isMount ? (
                                   <Skeleton variant="circular" width={40} height={40} />
                                 ) : (
                                   <Radio
+                                    color="secondary"
                                     checked={selectedValue === el._id}
                                     onChange={handleChangeRedioValue}
                                     value={el._id}
@@ -143,10 +173,19 @@ function Address() {
                             </div>
                             <div className='w-full flex flex-col gap-y-5'>
                               <div className='flex items-center gap-x-1'>
-                                <h4 className='text-[15px] font-semibold'>{el.name}</h4>
-                                <span className='text-[#00b585] text-[12px] border px-3 inline-block rounded-2xl'>
-                                  {el.addrType}
-                                </span>
+                                <h4 className='text-[15px] font-semibold mt-1'>{el.name}</h4>
+                                <div className='flex items-center gap-x-1 border rounded-full bg-green-50 text-green-700 px-3'>
+                                  {
+                                    el.addrType === "Home" ? (
+                                      <HomeIcon fontSize='small' />
+                                    ) : (
+                                      <BusinessIcon fontSize='small' />
+                                    )
+                                  }
+                                  <span className='text-[12px] mt-1'>
+                                    {el.addrType}
+                                  </span>
+                                </div>
                               </div>
                               <div>
                                 <p className='text-[#525252] text-[12px]'>{el.street}, {el.city}, {el.state} - {el.zip}</p>
@@ -158,9 +197,9 @@ function Address() {
                                     <DeleteAddress
                                       addrid={el._id}
                                     />
-                                    <Button 
-                                      onClick={() => handleEditModalAndAddrId(el._id)} 
-                                      variant="outlined" 
+                                    <Button
+                                      onClick={() => handleEditModalAndAddrId(el._id)}
+                                      variant="outlined"
                                       startIcon={<DriveFileRenameOutlineOutlinedIcon fontSize='small' />}
                                       sx={{
                                         fontSize: '14px',
@@ -173,8 +212,8 @@ function Address() {
                                         padding: '5px 20px',
                                         textTransform: 'capitalize',
                                         marginTop: '5px'
-                                    }}
-                                      >
+                                      }}
+                                    >
                                       Edit
                                     </Button>
                                   </div>
@@ -190,32 +229,46 @@ function Address() {
                   )
                 }
               </RadioGroup>
-              <div className='border border-dashed border-[#e4e4e4]'>
-                <Button onClick={() => dispatch(handleAddressModal(true))} variant="text" sx={{ fontSize: '13px', width: '100%', minHeight: '60px' }} startIcon={<AddIcon fontSize='small' />}>Add New Address</Button>
+              <div className='border-2 border-dashed border-[#e4e4e4]'>
+                <Button color='secondary' onClick={() => dispatch(handleAddressModal(true))} variant="text" sx={{ fontSize: '13px', width: '100%', minHeight: '60px', fontWeight:'600' }} startIcon={<AddIcon fontSize='small' />}>Add New Address</Button>
               </div>
             </div>
-            <div className='w-full lg:w-[30%] lg:ps-3 border-t border-gray-200'>
-              <h4 className='font-semibold text-[#525252] text-[13px] my-3'>Delivery Estimate</h4>
-              <div>
-                <p className='text-[13px] text-[#525252]'>Estimated delivery by <span className='font-semibold text-black'>{getEstimatedDeliveryDate()}</span></p>
-              </div>
-              <div className='border-t border-gray-400 border-dashed mt-5'>
-                <PaymentDetails />
-                <div className="w-full">
-                  <Button
-                    variant='contained'
-                    disabled={!selectedValue}
-                    onClick={() => router.push("/checkout/payment")}
-                    sx={{
-                      py: "10px",
-                      width: "100%",
-                      backgroundColor: "#313647",
-                      color: "#FFF",
-                      textTransform: "capitalize",
-                    }}
-                  >
-                    Continue
-                  </Button>
+            <div className='w-full lg:w-[30%] lg:ps-4'>
+              <div className='px-3 py-5 mt-4 border-2 border-gray-200 rounded-2xl'>
+                <div>
+                  <div className='text-green-500 bg-green-100 inline-block p-2 rounded-lg'>
+                    <CalendarMonthIcon/>
+                  </div>
+                </div>
+                <h4 className='font-semibold text-[#525252] text-[20px] my-3'>Delivery Estimate</h4>
+                <div className='flex items-center gap-x-3 bg-green-50 px-5 py-3 rounded-xl'>
+                  <div className='text-green-700'>
+                    <LocalShippingIcon/>
+                  </div>
+                  <div>
+                    <p className='text-[13px] text-[#525252]'>Estimated delivery by</p>
+                    <span className='font-semibold text-green-700'>{getEstimatedDeliveryDate()}</span>
+                  </div>
+                </div>
+                <div className='border-t-2 border-gray-200 border-dashed mt-5'>
+                  <PaymentDetails />
+                  <div className="w-full mt-5">
+                    <Button
+                      variant='contained'
+                      disabled={!selectedValue}
+                      onClick={() => router.push("/checkout/payment")}
+                      sx={{
+                        py: 2,
+                        width: "100%",
+                        backgroundColor: "#313647",
+                        color: "#FFF",
+                        textTransform: "capitalize",
+                        borderRadius: '13px'
+                      }}
+                    >
+                      Continue
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
