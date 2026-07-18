@@ -252,7 +252,7 @@ export default function EditAddress({addressId, addrbyid} : {addressId:string | 
                                 <TextField
                                     id="outlined-basic"
                                     size="small"
-                                    label="Street/House/Flat/Apartment*"
+                                    label="Apartment/Flat/House/Street*"
                                     variant="outlined"
                                     name="street"
                                     value={form.street}

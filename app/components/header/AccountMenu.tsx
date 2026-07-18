@@ -129,7 +129,7 @@ function AccountMenu(props : any) {
           </ListItemIcon>
           Address
         </MenuItem>
-        <MenuItem onClick={() => route.push('/my/wishlist')}>
+        <MenuItem onClick={() => route.push('/wishlist')}>
           <ListItemIcon>
             <FavoriteBorderIcon /> 
           </ListItemIcon>
